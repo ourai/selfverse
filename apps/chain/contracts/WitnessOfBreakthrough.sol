@@ -24,7 +24,7 @@ contract WitnessOfBreakthrough is SoulboundToken {
   function mint(address receiver) external onlyOwner nonReentrant {
     require(_minters[receiver] == 0, "Had minted");
 
-    uint256 tokenId; // TODO: 设置为自增 ID
+    uint256 tokenId = _nextTokenId();
 
     _safeMint(receiver, tokenId);
     _allMinters.push(receiver);

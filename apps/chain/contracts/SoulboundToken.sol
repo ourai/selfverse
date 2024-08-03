@@ -7,10 +7,29 @@ import { IERC721Enumerable, ERC721Enumerable } from "@openzeppelin/contracts/tok
 import { SelfGod } from "./SelfGod.sol";
 
 abstract contract SoulboundToken is ERC721Enumerable, SelfGod {
+  uint256 private _tokenIdCounter;
   string private _tokenBaseURI;
 
   constructor(string memory tokenBaseURI) {
     _tokenBaseURI = tokenBaseURI;
+  }
+
+  function _currentTokenId() internal view returns (uint256) {
+    return _tokenIdCounter;
+  }
+
+  function _nextTokenId() internal view returns (uint256) {
+    return _currentTokenId() + 1;
+  }
+
+  function _increaseTokenId() private returns (uint256) {
+    _tokenIdCounter += 1;
+    return _currentTokenId();
+  }
+
+  function _safeMint(address to, uint256 tokenId, bytes memory data) internal virtual override {
+    super._safeMint(to, tokenId, data);
+    _increaseTokenId();
   }
 
   function _baseURI() internal view virtual override returns (string memory) {

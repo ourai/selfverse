@@ -43,7 +43,7 @@ contract Donation is SoulboundToken {
     bool mintable = false;
 
     if (tokenId == 0 && donatedAmount >= _mintableAmount) {
-      // TODO: 设置为自增 ID
+      tokenId = _nextTokenId();
       mintable = true;
     }
 
