@@ -23,7 +23,7 @@ contract Donation is SoulboundToken {
   Record[] private _allDonations;
   address[] private _allDonators;
 
-  mapping(address donator => Donator) private _donators;
+  mapping(address => Donator) private _donators;
 
   constructor(string memory tokenBaseURI)
     ERC721("Selfverse Donator", "SV-DNTR")

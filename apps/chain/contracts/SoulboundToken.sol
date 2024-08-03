@@ -16,7 +16,7 @@ abstract contract SoulboundToken is ERC721Enumerable, SelfGod {
     return _tokenBaseURI;
   }
 
-  function setBaseURI(string calldata newTokenBaseURI) external onlyOwner {
+  function updateBaseURI(string calldata newTokenBaseURI) external onlyOwner {
     _tokenBaseURI = newTokenBaseURI;
   }
 
