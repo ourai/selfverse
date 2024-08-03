@@ -4,9 +4,11 @@ pragma solidity ^0.8.24;
 
 import { IERC721, ERC721 } from "@openzeppelin/contracts/token/ERC721/ERC721.sol";
 import { IERC721Enumerable, ERC721Enumerable } from "@openzeppelin/contracts/token/ERC721/extensions/ERC721Enumerable.sol";
-import { SelfGod } from "./SelfGod.sol";
 
-abstract contract SoulboundToken is ERC721Enumerable, SelfGod {
+import { SelfGod } from "../access/SelfGod.sol";
+import { ISoulboundToken } from "./ISoulboundToken.sol";
+
+abstract contract SoulboundToken is ERC721Enumerable, SelfGod, ISoulboundToken {
   uint256 private _tokenIdCounter;
   string private _tokenBaseURI;
 

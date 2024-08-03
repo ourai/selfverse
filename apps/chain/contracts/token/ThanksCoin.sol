@@ -3,7 +3,7 @@
 pragma solidity ^0.8.24;
 
 import { ERC20 } from "@openzeppelin/contracts/token/ERC20/ERC20.sol";
-import { SelfGod } from "./SelfGod.sol";
+import { SelfGod } from "../access/SelfGod.sol";
 
 contract ThanksCoin is ERC20("Selfverse ThanksCoin", "TNKS"), SelfGod {
   function _convertWithDecimals(uint256 amount) private view returns (uint256) {

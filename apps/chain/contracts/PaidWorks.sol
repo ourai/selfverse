@@ -2,7 +2,8 @@
 
 pragma solidity ^0.8.24;
 
-import { SelfGod } from "./SelfGod.sol";
+import { SelfGod } from "./access/SelfGod.sol";
+import { IAchievementToken } from "./token/IAchievementToken.sol";
 
 contract PaidWorks is SelfGod {
   struct Works {
@@ -57,10 +58,12 @@ contract PaidWorks is SelfGod {
 
     require(msg.value == targetWorks.price, "Insufficient payment.");
 
-    _soldWorks[id] = SoldWorks(id, msg.sender, block.timestamp);
+    address buyer = _msgSender();
+    _soldWorks[id] = SoldWorks(id, buyer, block.timestamp);
 
     if (targetWorks.badgeContract != address(0)) {
-      // TODO: mint badge to buyer
+      IAchievementToken badge = IAchievementToken(targetWorks.badgeContract);
+      badge.mint(buyer);
     }
   }
 

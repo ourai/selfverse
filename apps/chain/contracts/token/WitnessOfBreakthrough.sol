@@ -3,9 +3,11 @@
 pragma solidity ^0.8.24;
 
 import { IERC721, ERC721 } from "@openzeppelin/contracts/token/ERC721/ERC721.sol";
-import { SoulboundToken } from "./SoulboundToken.sol";
 
-contract WitnessOfBreakthrough is SoulboundToken {
+import { SoulboundToken } from "./SoulboundToken.sol";
+import { IAchievementToken } from "./IAchievementToken.sol";
+
+contract WitnessOfBreakthrough is SoulboundToken, IAchievementToken {
   struct Badge {
     uint256 tokenId;
     address owner;
