@@ -1,4 +1,5 @@
 // SPDX-License-Identifier: MIT
+
 pragma solidity ^0.8.24;
 
 import { IERC721, ERC721 } from "@openzeppelin/contracts/token/ERC721/ERC721.sol";
@@ -20,7 +21,7 @@ contract WitnessOfBreakthrough is SoulboundToken {
     SoulboundToken(tokenBaseURI)
   {}
 
-  function mint(address receiver) external onlyOwner {
+  function mint(address receiver) external onlyOwner nonReentrant {
     require(_minters[receiver] == 0, "Had minted");
 
     uint256 tokenId; // TODO: 设置为自增 ID
