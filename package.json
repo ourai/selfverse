@@ -3,6 +3,9 @@
   "version": "0.0.0",
   "description": "Self is Universe.",
   "private": true,
+  "engines": {
+    "node": ">=18.20.0"
+  },
   "devDependencies": {
     "@knosys/sdk": "^0.0.3",
     "@ntks/toolbox": "^0.0.6",
