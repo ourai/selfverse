@@ -1,0 +1,42 @@
+# macOS
+.DS_Store
+*.nosync
+
+sh.exe.stackdump
+
+# Logs
+logs
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+lerna-debug.log*
+
+# npm
+yarn.lock
+pnpm-lock.yaml
+package-lock.json
+node_modules
+.env
+
+# Hardhat files
+/apps/chain/cache
+/apps/chain/artifacts
+
+# TypeChain files
+/apps/chain/typechain
+/apps/chain/typechain-types
+
+# solidity-coverage files
+/apps/chain/coverage
+/apps/chain/coverage.json
+
+# Hardhat Ignition default folder for deployments against a local node
+/apps/chain/ignition/deployments
+
+.tmp
+.vscode
+dist
+dist-ssr
+*.local
