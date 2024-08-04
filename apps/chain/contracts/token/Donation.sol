@@ -2,7 +2,6 @@
 
 pragma solidity ^0.8.24;
 
-import { IERC721, ERC721 } from "@openzeppelin/contracts/token/ERC721/ERC721.sol";
 import { SoulboundToken } from "./SoulboundToken.sol";
 
 contract Donation is SoulboundToken {
@@ -27,8 +26,7 @@ contract Donation is SoulboundToken {
   mapping(address => Donator) private _donators;
 
   constructor(string memory tokenBaseURI)
-    ERC721("Selfverse Donator", "SV-DNTR")
-    SoulboundToken(tokenBaseURI)
+    SoulboundToken("Selfverse Donator", "SV-DNTR", tokenBaseURI)
   {}
 
   function _updateDonator(address donator, uint256 amount) private {
@@ -79,10 +77,5 @@ contract Donation is SoulboundToken {
 
   function getDonations() external view returns (Record[] memory) {
     return _allDonations;
-  }
-
-  function withdraw(address payable receiver, uint256 amount) external nonReentrant {
-    (bool success, ) = receiver.call{value: amount}("");
-    require(success, "Withdraw failed.");
   }
 }

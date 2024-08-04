@@ -77,9 +77,4 @@ contract PaidWorks is SelfGod {
 
     return allWorks;
   }
-
-  function withdraw(address payable receiver, uint256 amount) external nonReentrant {
-    (bool success, ) = receiver.call{value: amount}("");
-    require(success, "Withdraw failed.");
-  }
 }
