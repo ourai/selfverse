@@ -25,7 +25,7 @@ contract PaidWorks is SelfGod {
   mapping(uint256 => Works) private _publishedWorks;
   mapping(uint256 => SoldWorks) private _soldWorks;
 
-  function add(uint256 price, address badgeContract) public nonReentrant {
+  function add(uint256 price, address badgeContract) public onlyAdmin {
     require(price >= 0, "Price must not be less than 0 ETH.");
     uint256 id = _worksIds.length + 1;
     _publishedWorks[id] = Works(id, price, badgeContract, block.timestamp, 0, false);
@@ -36,22 +36,27 @@ contract PaidWorks is SelfGod {
     add(price, address(0));
   }
 
+  function remove(uint256 id) external onlyAdmin {
+    _checkExists(id);
+    // TODO: remove item
+  }
+
   function _checkExists(uint256 id) private view {
     require(_publishedWorks[id].createdAt != 0, "Specific works does't exist.");
   }
 
-  function sell(uint256 id) external {
+  function sell(uint256 id) external onlyAdmin {
     _checkExists(id);
     _publishedWorks[id].listedAt = block.timestamp;
     _publishedWorks[id].listing = true;
   }
 
-  function unlist(uint256 id) external {
+  function unlist(uint256 id) external onlyAdmin {
     _checkExists(id);
     _publishedWorks[id].listing = false;
   }
 
-  function buy(uint256 id) external payable nonReentrant {
+  function buy(uint256 id) external payable {
     _checkExists(id);
 
     Works memory targetWorks = _publishedWorks[id];
