@@ -26,7 +26,6 @@ contract PaidWorks is SelfGod {
   mapping(uint256 => SoldWorks) private _soldWorks;
 
   function add(uint256 price, address badgeContract) public onlyAdmin {
-    require(price >= 0, "Price must not be less than 0 ETH.");
     uint256 id = _worksIds.length + 1;
     _publishedWorks[id] = Works(id, price, badgeContract, block.timestamp, 0, false);
     _worksIds.push(id);
@@ -61,6 +60,7 @@ contract PaidWorks is SelfGod {
 
     Works memory targetWorks = _publishedWorks[id];
 
+    require(targetWorks.listing, "Not listing.");
     require(msg.value == targetWorks.price, "Insufficient payment.");
 
     address buyer = _msgSender();
