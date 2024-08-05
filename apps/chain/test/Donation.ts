@@ -24,7 +24,9 @@ describe('Donation', () => {
     it('Check ownership', createOwnerChecker(deployDonationFixture, 'donation'));
     it('Check admin setup', createAdminChecker(deployDonationFixture, 'donation'));
     it('Check operators setup', createOperatorChecker(deployDonationFixture, 'donation'));
+  });
 
+  describe('Donation', () => {
     it('Check donation', async () => {
       const { others, donation } = await loadFixture(deployDonationFixture);
       const [d1, d2] = others;
