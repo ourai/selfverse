@@ -33,7 +33,9 @@ contract Donation is SoulboundToken {
     Donator memory cachedDonator = _donators[donator];
     uint256 donatedAmount = amount;
 
-    if (cachedDonator.donator != address(0)) {
+    if (cachedDonator.donator == address(0)) {
+      _allDonators.push(donator);
+    } else {
       donatedAmount += cachedDonator.amount;
     }
 
@@ -63,6 +65,10 @@ contract Donation is SoulboundToken {
 
     _allDonations.push(Record(donator, amount, block.timestamp));
     _updateDonator(donator, amount);
+  }
+
+  function getReceived() external view returns (uint256) {
+    return _totalReceived;
   }
 
   function getDonators() external view returns (Donator[] memory) {

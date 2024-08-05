@@ -32,7 +32,7 @@ abstract contract SoulboundToken is SelfGod, ERC721Enumerable, IncreasableToken,
     _tokenBaseURI = newTokenBaseURI;
   }
 
-  function transferFrom(address from, address to, uint256 tokenId) public pure override(IERC721, ERC721) {
+  function transferFrom(address /* from */, address /* to */, uint256 /* tokenId */) public pure override(IERC721, ERC721) {
     revert("Soulbound token can't be transfered.");
   }
 

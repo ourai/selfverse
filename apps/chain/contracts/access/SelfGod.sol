@@ -33,10 +33,9 @@ abstract contract SelfGod is Ownable(msg.sender), AccessControlEnumerable, Reent
     if (needClearPrevMembers) {
       uint256 prevMemberCount = getRoleMemberCount(role);
 
-      if (prevMemberCount > 0) {
-        for (uint256 i = 0; i < prevMemberCount; i++) {
-          _revokeRole(role, getRoleMember(role, i));
-        }
+      while (prevMemberCount > 0) {
+        _revokeRole(role, getRoleMember(role, prevMemberCount - 1));
+        prevMemberCount = getRoleMemberCount(role);
       }
     }
 

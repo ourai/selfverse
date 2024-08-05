@@ -36,10 +36,10 @@ contract PaidWorks is SelfGod {
     add(price, address(0));
   }
 
-  function remove(uint256 id) external onlyAdmin {
-    _checkExists(id);
-    // TODO: remove item
-  }
+  // function remove(uint256 id) external onlyAdmin {
+  //   _checkExists(id);
+  //   // TODO: remove item
+  // }
 
   function _checkExists(uint256 id) private view {
     require(_publishedWorks[id].createdAt != 0, "Specific works does't exist.");
