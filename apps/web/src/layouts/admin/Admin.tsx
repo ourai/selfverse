@@ -1,17 +1,18 @@
-import { Link, Outlet } from 'react-router-dom';
+import { Link } from 'react-router-dom';
 import { Layout, Flex, Space } from 'antd';
 
 import Container from '../../components/container';
 import Passport from '../../components/passport';
 
-function AdminLayout() {
-  const containerStyle = { maxWidth: 1280, margin: '0 auto' };
+import LayoutBody from './LayoutBody';
+import style from './style.module.scss';
 
+function AdminLayout() {
   return (
     <Container>
-      <Layout>
-        <Layout.Header style={{ backgroundColor: '#ff0' }}>
-          <Flex align="center" justify="space-between" style={containerStyle}>
+      <Layout className={style.AdminLayout}>
+        <Layout.Header className={style['AdminLayout-header']}>
+          <Flex align="center" justify="space-between">
             <div style={{ fontSize: 24 }}>
               <Link to="/">Selfverse</Link>
             </div>
@@ -20,11 +21,9 @@ function AdminLayout() {
             </Space>
           </Flex>
         </Layout.Header>
-        <Layout.Content>
-          <div style={{ ...containerStyle, padding: 24 }}>
-            <Outlet />
-          </div>
-        </Layout.Content>
+        <Layout className={style['AdminLayout-body']}>
+          <LayoutBody />
+        </Layout>
       </Layout>
     </Container>
   )

@@ -1,22 +1,28 @@
-import { useNavigate } from 'react-router-dom';
-import { Connector, ConnectButton, useAccount } from '@ant-design/web3';
+import { useNavigate, useLocation } from 'react-router-dom';
+import { KeyOutlined } from '@ant-design/icons';
+import { Connector, ConnectButton } from '@ant-design/web3';
+
+import { useIsAdmin } from '../../hooks';
+
+const adminRoutePath = '/cellar';
 
 function Passport() {
-  const { account } = useAccount();
+  const location = useLocation();
   const navigate = useNavigate();
-  const isAdmin = !!(account && account.address);
+  const isAdmin = useIsAdmin();
 
-  const extraItems = isAdmin ? [
+  const extraItems = isAdmin && location.pathname.indexOf(adminRoutePath) === -1 ? [
     {
-      label: 'Enter the cellar',
+      label: 'Enter Cellar',
       key: 'cellar',
-      onClick: () => navigate('/cellar'),
+      icon: <KeyOutlined />,
+      onClick: () => navigate(adminRoutePath),
     }
   ] : [];
 
   return (
     <Connector modalProps={{ mode: 'simple' }}>
-      <ConnectButton size="large" profileModal={false} actionsMenu={{ extraItems }} />
+      <ConnectButton type="text" size="middle" profileModal={false} actionsMenu={{ extraItems }} />
     </Connector>
   );
 }

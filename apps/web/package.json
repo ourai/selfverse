@@ -4,6 +4,7 @@
   "version": "0.0.0",
   "type": "module",
   "dependencies": {
+    "@ant-design/icons": "^5.4.0",
     "@ant-design/web3": "^1.15.1",
     "@ant-design/web3-assets": "^1.9.0",
     "@ant-design/web3-wagmi": "^2.7.0",
