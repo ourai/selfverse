@@ -55,7 +55,7 @@ contract PaidWorks is SelfGod {
     _publishedWorks[id].listing = false;
   }
 
-  function buy(uint256 id) external payable {
+  function buy(uint256 id) external payable whenNotPaused {
     _checkExists(id);
 
     Works memory targetWorks = _publishedWorks[id];

@@ -20,7 +20,7 @@ abstract contract AchievementToken is SoulboundToken, IAchievementToken {
     SoulboundToken(tokenName, tokenSymbol, tokenBaseURI)
   {}
 
-  function mint(address receiver) external onlyOperator nonReentrant {
+  function mint(address receiver) external onlyOperator whenNotPaused nonReentrant {
     require(_minters[receiver] == 0, string.concat(name(), " had been minted."));
 
     uint256 tokenId = _nextTokenId();

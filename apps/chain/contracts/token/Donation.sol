@@ -54,7 +54,7 @@ contract Donation is SoulboundToken {
     }
   }
 
-  function donate() external payable nonReentrant {
+  function donate() external payable whenNotPaused nonReentrant {
     uint256 amount = msg.value;
 
     require(amount > 0, "The donation amount must be greater than 0 ETH.");

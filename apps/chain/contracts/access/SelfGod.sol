@@ -4,12 +4,13 @@ pragma solidity ^0.8.24;
 
 import { Ownable } from "@openzeppelin/contracts/access/Ownable.sol";
 import { AccessControlEnumerable } from "@openzeppelin/contracts/access/extensions/AccessControlEnumerable.sol";
+import { Pausable } from "@openzeppelin/contracts/utils/Pausable.sol";
 import { ReentrancyGuard } from "@openzeppelin/contracts/utils/ReentrancyGuard.sol";
 
 import { ISelfGod } from "./ISelfGod.sol";
 
 // Self is the God of Selfverse
-abstract contract SelfGod is Ownable(msg.sender), AccessControlEnumerable, ReentrancyGuard, ISelfGod {
+abstract contract SelfGod is Ownable(msg.sender), AccessControlEnumerable, Pausable, ReentrancyGuard, ISelfGod {
   bytes32 public constant SV_OWNER = keccak256("SV_OWNER");
   bytes32 public constant SV_ADMIN = keccak256("SV_ADMIN");
   bytes32 public constant SV_OPERATOR = keccak256("SV_OPERATOR");
@@ -68,6 +69,14 @@ abstract contract SelfGod is Ownable(msg.sender), AccessControlEnumerable, Reent
   function withdraw(address payable receiver, uint256 amount) external onlyAdmin nonReentrant {
     (bool success, ) = receiver.call{value: amount}("");
     require(success, "Withdraw failed.");
+  }
+
+  function pause() external onlyAdmin {
+    _pause();
+  }
+
+  function unpause() external onlyAdmin {
+    _unpause();
   }
 
   function supportsInterface(bytes4 interfaceId) public view virtual override returns (bool) {
