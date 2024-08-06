@@ -24,10 +24,10 @@ function AdminWorksList() {
       ellipsis: true,
     },
     {
-      title: 'Price',
+      title: 'Price (ETH)',
       dataIndex: 'price',
       key: 'price',
-      width: 100,
+      width: 150,
     },
     {
       title: 'Operation',
@@ -60,7 +60,7 @@ function AdminWorksList() {
   return (
     <div className={style.AdminWorksList}>
       <div className={style['AdminWorksList-header']}>
-        <span className={style['AdminWorksList-title']}>{works.length} works</span>
+        <span className={style['AdminWorksList-title']}>Works ({works.length})</span>
         <Space>
           <Button type="primary">Create</Button>
         </Space>

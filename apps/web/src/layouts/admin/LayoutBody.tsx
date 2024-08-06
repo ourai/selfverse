@@ -16,18 +16,22 @@ function LayoutBody() {
     },
   ];
 
-  return isAdmin ? (
-    <>
-      <Layout.Sider className={style['AdminLayout-sidebar']} theme="light">
-        <Menu items={menuItems} defaultSelectedKeys={[menuItems[0]!.key as string]} />
-      </Layout.Sider>
-      <Layout.Content className={style['AdminLayout-main']}>
-        <Outlet />
-      </Layout.Content>
-    </>
-  ) : (
-    <div className={style['AdminLayout-noAuth']}>Connect admin's wallet first.</div>
-  )
+  return (
+    <Layout className={style['AdminLayout-body']}>
+      {isAdmin ? (
+        <>
+          <Layout.Sider className={style['AdminLayout-sidebar']} theme="light">
+            <Menu items={menuItems} defaultSelectedKeys={[menuItems[0]!.key as string]} />
+          </Layout.Sider>
+          <Layout.Content className={style['AdminLayout-main']}>
+            <Outlet />
+          </Layout.Content>
+        </>
+      ) : (
+        <div className={style['AdminLayout-noAuth']}>Connect admin's wallet first.</div>
+      )}
+    </Layout>
+  );
 }
 
 export default LayoutBody;

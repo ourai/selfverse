@@ -21,9 +21,7 @@ function AdminLayout() {
             </Space>
           </Flex>
         </Layout.Header>
-        <Layout className={style['AdminLayout-body']}>
-          <LayoutBody />
-        </Layout>
+        <LayoutBody />
       </Layout>
     </Container>
   )

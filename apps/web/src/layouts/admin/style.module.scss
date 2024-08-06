@@ -2,9 +2,10 @@
   height: 100%;
 
   &-header {
+    padding: 0 24px;
+    z-index: 1;
     background-color: #fff;
     box-shadow: 0 8px 24px -2px rgba(0,0,0,.05);
-    z-index: 1;
   }
 
   &-body {}
