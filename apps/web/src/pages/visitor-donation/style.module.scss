@@ -1,0 +1,62 @@
+.DonatorCard {
+  &-header {
+    font-size: 16px;
+  }
+
+  &-footer {
+    margin-top: 8px;
+  }
+}
+
+.Donation {
+  $hp: 24px;
+
+  height: 100%;
+
+  &-header,
+  &-header::before,
+  &-body {
+    border-radius: 6px;
+  }
+
+  &-header {
+    position: relative;
+    padding: $hp * 1.5 $hp;
+    background: transparent url("/banner.jpg") no-repeat 50% 50%;
+
+    &::before {
+      content: "\0020";
+      position: absolute;
+      top: 0;
+      right: 0;
+      bottom: 0;
+      left: 0;
+      z-index: 0;
+      background-color: #000;
+      opacity: .15;
+    }
+  }
+
+  &-headerContent {
+    position: relative;
+    z-index: 1;
+    text-align: center;
+  }
+
+  &-donee {
+    margin-bottom: 16px;
+  }
+
+  &-body {
+    margin-top: $hp;
+    padding: $hp;
+    background-color: #fff;
+  }
+
+  &-thanks {
+    font-size: 28px;
+    font-weight: bold;
+    text-align: center;
+    text-transform: uppercase;
+  }
+}

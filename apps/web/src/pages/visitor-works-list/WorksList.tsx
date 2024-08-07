@@ -25,8 +25,8 @@ function WorksList() {
       {contextHolder}
       {works.length > 0 ? (
         <List
-          grid={{ gutter: 16, column: 4 }}
           dataSource={works}
+          grid={{ gutter: 16, column: 4 }}
           renderItem={item => (
             <List.Item>
               <Card
