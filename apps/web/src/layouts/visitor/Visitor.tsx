@@ -35,7 +35,7 @@ function VisitorLayout() {
             </Space>
           </Flex>
         </Layout.Header>
-        <Layout.Content>
+        <Layout.Content className={style['VisitorLayout-body']}>
           <div style={{ ...containerStyle, padding: 24 }}>
             <Outlet />
           </div>
