@@ -3,6 +3,24 @@ const { existsSync, readdirSync } = require('fs');
 
 const { isDirectory, readData, saveData, createAppScriptExecutor } = require('../helper');
 
+function resolveAbiMap(sourceDirPath) {
+  return readdirSync(sourceDirPath).reduce((prev, dirName) => {
+    const dirPath = joinPath(sourceDirPath, dirName);
+
+    if (dirName.startsWith('.') || dirName.startsWith('_') || !isDirectory(dirPath)) {
+      return prev;
+    }
+
+    if (!dirName.endsWith('.sol')) {
+      return { ...prev, ...resolveAbiMap(dirPath) };
+    }
+
+    const contractName = dirName.replace('.sol', '');
+
+    return { ...prev, [contractName]: readData(joinPath(dirPath, `${contractName}.json`)).abi };
+  }, {});
+}
+
 function copyChainArtifacts(appRoot) {
   const artifactRoot = joinPath(appRoot, '..', 'chain', 'artifacts', 'contracts');
 
@@ -10,19 +28,7 @@ function copyChainArtifacts(appRoot) {
     return;
   }
 
-  const contracts = {};
-
-  readdirSync(artifactRoot).forEach(dirName => {
-    const dirPath = `${artifactRoot}/${dirName}`;
-
-    if (dirName.startsWith('.') || !isDirectory(dirPath)) {
-      return;
-    }
-
-    const contractName = dirName.replace('.sol', '');
-
-    contracts[contractName] = readData(joinPath(dirPath, `${contractName}.json`)).abi;
-  });
+  const contracts = resolveAbiMap(artifactRoot);
 
   if (Object.keys(contracts).length === 0) {
     return;

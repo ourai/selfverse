@@ -1,10 +1,20 @@
+import { useState, useEffect } from 'react';
 import { type TableProps, Table, Space, Button } from 'antd';
 
-import { works } from '../../constants';
+import { fetchOwner, fetchAdmin, updateAdmin, fetchList } from '../../services/works';
+import AdminOnly from '../../components/admin-only';
 
 import style from './style.module.scss';
 
 function AdminWorksList() {
+  const [works, setWorks] = useState([]);
+
+  useEffect(() => {
+    fetchList().then(res => {
+      console.log('res in admin works', res);
+    });
+  }, []);
+
   const columns: TableProps<any>['columns'] = [
     {
       title: 'Title',
@@ -51,17 +61,19 @@ function AdminWorksList() {
   ];
 
   return (
-    <div className={style.AdminWorksList}>
-      <div className={style['AdminWorksList-header']}>
-        <span className={style['AdminWorksList-title']}>Works ({works.length})</span>
-        <Space>
-          <Button type="primary">Create</Button>
-        </Space>
+    <AdminOnly fetchOwner={fetchOwner} fetchAdmin={fetchAdmin} updateAdmin={updateAdmin}>
+      <div className={style.AdminWorksList}>
+        <div className={style['AdminWorksList-header']}>
+          <span className={style['AdminWorksList-title']}>Works ({works.length})</span>
+          <Space>
+            <Button type="primary">Create</Button>
+          </Space>
+        </div>
+        <div className={style['AdminWorksList-body']}>
+          <Table columns={columns} dataSource={works} rowKey="id" pagination={false} />
+        </div>
       </div>
-      <div className={style['AdminWorksList-body']}>
-        <Table columns={columns} dataSource={works} rowKey="id" pagination={false} />
-      </div>
-    </div>
+    </AdminOnly>
   );
 }
 

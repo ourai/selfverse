@@ -1,0 +1,9 @@
+.AdminOnly {
+  height: 100%;
+
+  > :global(.ant-spin-container) {
+    height: 100%;
+    border-radius: 6px;
+    background-color: #fff;
+  }
+}

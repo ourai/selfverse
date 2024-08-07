@@ -1,6 +1,6 @@
 .WorksItem {
   $cw: 225px;
-  $ch: $cw / 3 * 4;
+  $ch: calc($cw / 3) * 4;
   $hp: 24px;
 
   &-header,

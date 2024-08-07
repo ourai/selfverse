@@ -28,7 +28,7 @@ function LayoutBody() {
           </Layout.Content>
         </>
       ) : (
-        <div className={style['AdminLayout-noAuth']}>Connect admin's wallet first.</div>
+        <div className={style['AdminLayout-noAuth']}>Connect wallet first.</div>
       )}
     </Layout>
   );

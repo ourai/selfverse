@@ -1,15 +1,23 @@
+import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { List, Card, Popconfirm, message } from 'antd';
 
-import { works as allWorks } from '../../constants';
 import { resolvePrice } from '../../utils';
+import { fetchList } from '../../services/works';
 
 import style from './style.module.scss';
 
 function WorksList() {
+  const [works, setWorks] = useState([]);
   const navigate = useNavigate();
   const [messageApi, contextHolder] = message.useMessage();
-  const works = allWorks.filter(item => item.listing);
+  // const works = allWorks.filter(item => item.listing);
+
+  useEffect(() => {
+    fetchList().then(res => {
+      console.log('res', res);
+    })
+  }, [])
 
   const handleStopPropagation = e => {
     e.preventDefault();
