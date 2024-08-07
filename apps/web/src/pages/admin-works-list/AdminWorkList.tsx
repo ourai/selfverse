@@ -1,5 +1,7 @@
 import { type TableProps, Table, Space, Button } from 'antd';
 
+import { works } from '../../constants';
+
 import style from './style.module.scss';
 
 function AdminWorksList() {
@@ -47,15 +49,6 @@ function AdminWorksList() {
       ),
     },
   ];
-
-  const works = Array.from(new Array(8)).map((_, i) => ({
-    id: i + 1,
-    title: `作品 ${i + 1}`,
-    description: `作品 ${i + 1} 的介绍介绍介绍介绍作品 ${i + 1} 的介绍介绍介绍介绍作品 ${i + 1} 的介绍介绍介绍介绍`,
-    cover: '',
-    price: i,
-    listing: i % 2 === 0,
-  }));
 
   return (
     <div className={style.AdminWorksList}>

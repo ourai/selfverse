@@ -1,0 +1,54 @@
+.WorksItem {
+  $cw: 225px;
+  $ch: $cw / 3 * 4;
+  $hp: 24px;
+
+  &-header,
+  &-body {
+    padding: $hp;
+    background-color: #fff;
+    border-radius: 6px;
+  }
+
+  &-header {
+    display: flex;
+  }
+
+  &-cover {
+    flex-shrink: 0;
+    width: $cw;
+    height: $ch;
+    margin-right: $hp;
+    border-radius: 6px;
+    background: none transparent no-repeat 50% 50%;
+    background-size: cover;
+
+    img {
+      display: none;
+    }
+  }
+
+  &-headerContent {
+    display: flex;
+    flex-direction: column;
+    flex-grow: 1;
+  }
+
+  &-headerMain {
+    flex-grow: 1;
+
+    h1 {
+      margin: 0;
+      font-size: 36px;
+    }
+  }
+
+  &-headerMeta {
+    flex-shrink: 0;
+  }
+
+  &-body {
+    min-height: 480px;
+    margin-top: $hp;
+  }
+}

@@ -1,18 +1,15 @@
 import { useNavigate } from 'react-router-dom';
 import { List, Card, Popconfirm, message } from 'antd';
 
+import { works as allWorks } from '../../constants';
+import { resolvePrice } from '../../utils';
+
 import style from './style.module.scss';
 
 function WorksList() {
-  const works = Array.from(new Array(8)).map((_, i) => ({
-    id: i + 1,
-    title: `作品 ${i + 1}`,
-    description: `作品 ${i + 1} 的介绍介绍介绍介绍作品 ${i + 1} 的介绍介绍介绍介绍作品 ${i + 1} 的介绍介绍介绍介绍`,
-    cover: '',
-    price: i,
-  }));
   const navigate = useNavigate();
   const [messageApi, contextHolder] = message.useMessage();
+  const works = allWorks.filter(item => item.listing);
 
   const handleStopPropagation = e => {
     e.preventDefault();
@@ -38,12 +35,12 @@ function WorksList() {
                   <div onClick={handleStopPropagation}>
                     <Popconfirm
                       title={`Buy ${item.title}`}
-                      description={`Are you sure to buy ${item.title}? You will pay ${item.price} ETH for it.`}
+                      description={`Are you sure to buy ${item.title}? You will pay ${resolvePrice(item.price)} for it.`}
                       okText="Yes"
                       cancelText="No"
                       onConfirm={handleConfirm}
                     >
-                      <div>{item.price > 0 ? `Pay ${item.price} ETH` : 'Free'}</div>
+                      <div>{item.price > 0 ? `Pay ${resolvePrice(item.price)}` : 'Free'}</div>
                     </Popconfirm>
                   </div>
                 ]}

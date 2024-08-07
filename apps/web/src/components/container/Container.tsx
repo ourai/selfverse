@@ -6,11 +6,13 @@ import type { Chain, Transport } from 'viem';
 import { createConfig, http } from 'wagmi';
 import { sepolia, hardhat } from 'wagmi/chains';
 
+import { isHardhatEnabled } from '../../utils';
+
 const chainsProps: AntdChain[] = [Sepolia];
 const chains: [Chain, ...Chain[]] = [sepolia];
 const transports: Record<number, Transport> = { [sepolia.id]: http() };
 
-if (['true', true].indexOf(import.meta.env.VITE_HARDHAT_ENABLED) !== -1) {
+if (isHardhatEnabled()) {
   chainsProps.push(Hardhat);
   chains.push(hardhat);
   transports[hardhat.id] = http();
