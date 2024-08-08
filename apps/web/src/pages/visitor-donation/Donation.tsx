@@ -2,10 +2,13 @@ import { Avatar, Button, List, Tabs, type TabsProps } from 'antd';
 import { HeartFilled } from '@ant-design/icons';
 import { EthereumFilled } from '@ant-design/web3-icons';
 
+import { useIdentityContext } from '../../components/identity';
+
 import DonatorCard from './DonatorCard';
 import style from './style.module.scss';
 
 function Donation() {
+  const identity = useIdentityContext();
   const donators = Array.from(new Array(15)).map((_ , i) => ({
     address: `0x${i + 1}`,
     amount: Math.ceil(Math.random() * 1000),
@@ -58,7 +61,9 @@ function Donation() {
           <div className={style['Donation-donee']}>
             <Avatar src="/ourai.jpg" size={150} />
           </div>
-          <Button type="primary" size="large" icon={<EthereumFilled />} iconPosition="end">Buy me a cup of coffee</Button>
+          {identity.checked && identity.visitor && (
+            <Button className={style['Donation-trigger']} type="primary" size="large" icon={<EthereumFilled />} iconPosition="end">Buy me a cup of coffee</Button>
+          )}
         </div>
       </header>
       <article className={style['Donation-body']}>

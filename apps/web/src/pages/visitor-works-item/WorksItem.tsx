@@ -40,7 +40,7 @@ function WorksItem() {
   let tabItems: TabsProps['items'] = [];
 
   if (record) {
-    if (identity.visitor) {
+    if (identity.checked && identity.visitor) {
       if (record.listing) {
         buyable = true;
         btnText = `Pay ${resolvePrice(record.price)}`;
@@ -83,7 +83,7 @@ function WorksItem() {
                 <p>{record.description}</p>
               </div>
               <Flex className={style['WorksItem-headerMeta']} align="center" justify="space-between">
-                {identity.visitor && (
+                {identity.checked && identity.visitor && (
                   <Button type="primary" size="large" disabled={!buyable}>{btnText}</Button>
                 )}
                 {buyers.length > 0 && (

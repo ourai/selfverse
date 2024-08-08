@@ -5,6 +5,7 @@ type AccountIdentity = {
   owner: boolean;
   admin: boolean;
   visitor: boolean;
+  adminAddress: string;
 };
 
 type IdentityProps = PropsWithChildren;

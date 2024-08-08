@@ -1,8 +1,8 @@
 import { type PropsWithChildren, type ReactNode, useState, useEffect } from 'react';
 import { Form, Input, Button, Spin, Modal, message } from 'antd';
-import { useAccount } from '@ant-design/web3';
 
 import type { AddressHash } from '../../types';
+import { useIdentityContext } from '../../components/identity';
 import style from './style.module.scss';
 
 type AdminOnlyProps = PropsWithChildren<{
@@ -13,26 +13,15 @@ type AdminOnlyProps = PropsWithChildren<{
 }>;
 
 function AdminOnly(props: AdminOnlyProps) {
-  const [owner, setOwner] = useState('');
-  const [admin, setAdmin] = useState('');
-  const [checked, setChecked] = useState(false);
-  const { account: { address } } = useAccount();
+  const identity = useIdentityContext();
   const [messageApi, contextHolder] = message.useMessage();
   const [updating, setUpdating] = useState(false);
   const [newAdmin, setNewAdmin] = useState('');
-  const ownerSignedIn = address === owner;
 
   let resolvedChildren: ReactNode;
 
   useEffect(() => {
-    Promise.all([props.fetchOwner(), props.fetchAdmin()]).then(results => {
-      setOwner(results[0]);
-      setAdmin(results[1]);
-    }).finally(() => setChecked(true));
-  });
-
-  useEffect(() => {
-    if (!ownerSignedIn || !updating || !newAdmin) {
+    if (!identity.owner || !updating || !newAdmin) {
       return;
     }
 
@@ -57,11 +46,11 @@ function AdminOnly(props: AdminOnlyProps) {
       return messageApi.error('Address must start with 0x.');
     }
 
-    if (adminAddr === admin) {
+    if (adminAddr === identity.adminAddress) {
       return messageApi.error('Address hasn\'t been changed.');
     }
 
-    if (admin) {
+    if (identity.adminAddress) {
       Modal.confirm({
         title: 'Update admin\'s address',
         content: 'Are you sure to update?',
@@ -72,13 +61,13 @@ function AdminOnly(props: AdminOnlyProps) {
     }
   }
 
-  if (ownerSignedIn) {
+  if (identity.owner) {
     resolvedChildren = (
       <div style={{ maxWidth: 600, margin: '0 auto', paddingTop: 100 }}>
         <Form
           labelCol={{ span: 4 }}
           wrapperCol={{ span: 20 }}
-          initialValues={{ address: admin }}
+          initialValues={{ address: identity.adminAddress }}
           autoComplete="off"
           onFinish={handleAdminFormSubmit}
         >
@@ -95,14 +84,14 @@ function AdminOnly(props: AdminOnlyProps) {
         </Form>
       </div>
     );
-  } else if (address === admin) {
+  } else if (identity.admin) {
     resolvedChildren = props.children;
-  } else if (checked) {
+  } else if (identity.checked) {
     resolvedChildren = <div>You shouldn't be here.</div>
   }
 
   return (
-    <Spin wrapperClassName={style.AdminOnly} spinning={props.busy || updating || !checked}>
+    <Spin wrapperClassName={style.AdminOnly} spinning={props.busy || updating || !identity.checked}>
       {contextHolder}
       {resolvedChildren}
     </Spin>

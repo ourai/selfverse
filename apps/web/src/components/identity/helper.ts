@@ -5,6 +5,7 @@ const defaultIdentity: AccountIdentity = {
   owner: false,
   admin: false,
   visitor: false,
+  adminAddress: '',
 };
 
 function getDefaultIdentity() {
@@ -12,8 +13,12 @@ function getDefaultIdentity() {
 }
 
 function resolveContract(pathname: string) {
-  if (pathname.startsWith('/works')) {
+  if (pathname.startsWith('/works') || pathname.startsWith('/cellar')) {
     return 'paidWorks';
+  }
+
+  if (pathname.startsWith('/donation')) {
+    return 'donation';
   }
 
   return '';

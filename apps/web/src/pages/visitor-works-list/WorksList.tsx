@@ -5,10 +5,12 @@ import { List, Card, Popconfirm, message } from 'antd';
 import type { WorkListItem } from '../../types';
 import { resolvePrice } from '../../utils';
 import { fetchList } from '../../services/works';
+import { useIdentityContext } from '../../components/identity';
 
 import style from './style.module.scss';
 
 function WorksList() {
+  const identity = useIdentityContext();
   const [works, setWorks] = useState<WorkListItem[]>([]);
   const navigate = useNavigate();
   const [messageApi, contextHolder] = message.useMessage();
@@ -40,7 +42,7 @@ function WorksList() {
             <List.Item>
               <Card
                 cover={<img src={item.cover} />}
-                actions={[
+                actions={identity.visitor ? [
                   <div onClick={handleStopPropagation}>
                     <Popconfirm
                       title={`Buy ${item.title}`}
@@ -52,7 +54,7 @@ function WorksList() {
                       <div>{item.price > 0 ? `Pay ${resolvePrice(item.price)}` : 'Free'}</div>
                     </Popconfirm>
                   </div>
-                ]}
+                ] : []}
                 hoverable
                 onClick={() => navigate(`/works/${item.id}`)}
               >
