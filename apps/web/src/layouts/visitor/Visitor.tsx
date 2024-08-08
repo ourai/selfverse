@@ -1,4 +1,4 @@
-import { Link, Outlet } from 'react-router-dom';
+import { useLocation, Link, Outlet } from 'react-router-dom';
 import { Layout, Flex, Space, Menu, type MenuProps } from 'antd';
 
 import Container from '../../components/container';
@@ -7,6 +7,8 @@ import Passport from '../../components/passport';
 import style from './style.module.scss';
 
 function VisitorLayout() {
+  const { pathname } = useLocation();
+
   const containerStyle = { maxWidth: 1280, margin: '0 auto' };
   const menuItems: MenuProps['items'] = [
     {
@@ -18,6 +20,7 @@ function VisitorLayout() {
       key: 'donation',
     },
   ];
+  const currentMenu = menuItems.find(item => `/${item!.key}` === pathname );
 
   return (
     <Container>
@@ -28,7 +31,7 @@ function VisitorLayout() {
               <div style={{ fontSize: 24 }}>
                 <Link to="/">Selfverse</Link>
               </div>
-              <Menu items={menuItems} mode="horizontal" />
+              <Menu items={menuItems} selectedKeys={[(currentMenu ? currentMenu.key! :menuItems[0]!.key) as string]} mode="horizontal" />
             </Space>
             <Space>
               <Passport />

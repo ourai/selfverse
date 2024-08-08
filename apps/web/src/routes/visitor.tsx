@@ -1,4 +1,5 @@
-import type { RouteObject } from 'react-router-dom';
+import { type RouteObject, Navigate } from 'react-router-dom';
+
 import VisitorLayout from '../layouts/visitor';
 import WorksList from '../pages/visitor-works-list';
 import WorksItem from '../pages/visitor-works-item';
@@ -10,7 +11,7 @@ export default {
   children: [
     {
       path: '',
-      element: <div>Visitor homepage</div>
+      element: <Navigate to="/works" replace />
     },
     {
       path: 'works',

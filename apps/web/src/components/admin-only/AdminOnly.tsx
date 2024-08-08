@@ -6,8 +6,6 @@ import { useIdentityContext } from '../../components/identity';
 import style from './style.module.scss';
 
 type AdminOnlyProps = PropsWithChildren<{
-  fetchOwner: () => Promise<string>;
-  fetchAdmin: () => Promise<string>;
   updateAdmin: (address: AddressHash) => Promise<any>;
   busy: boolean;
 }>;

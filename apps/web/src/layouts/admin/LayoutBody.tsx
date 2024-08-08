@@ -1,27 +1,37 @@
-import { Outlet } from 'react-router-dom';
+import { useLocation, Link, Outlet } from 'react-router-dom';
 import { Layout, Menu, type MenuProps } from 'antd';
-import { BookOutlined } from '@ant-design/icons';
+import { BookOutlined, HeartOutlined } from '@ant-design/icons';
 
 import { useIsAdmin } from '../../hooks';
 
 import style from './style.module.scss';
 
+const pathPrefix = '/cellar';
+
 function LayoutBody() {
   const isAdmin = useIsAdmin();
+  const { pathname } = useLocation();
+
   const menuItems: MenuProps['items'] = [
     {
-      label: 'Works',
+      label: <Link to={`${pathPrefix}/works`}>Works</Link>,
       key: 'works',
       icon: <BookOutlined />,
     },
+    {
+      label: <Link to={`${pathPrefix}/donation`}>Donation</Link>,
+      key: 'donation',
+      icon: <HeartOutlined />,
+    },
   ];
+  const currentMenu = menuItems.find(item => `${pathPrefix}/${item!.key}` === pathname );
 
   return (
     <Layout className={style['AdminLayout-body']}>
       {isAdmin ? (
         <>
           <Layout.Sider className={style['AdminLayout-sidebar']} theme="light">
-            <Menu items={menuItems} defaultSelectedKeys={[menuItems[0]!.key as string]} />
+            <Menu items={menuItems} selectedKeys={[(currentMenu ? currentMenu.key! :menuItems[0]!.key) as string]} />
           </Layout.Sider>
           <Layout.Content className={style['AdminLayout-main']}>
             <Outlet />

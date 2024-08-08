@@ -2,14 +2,12 @@ import { parseEther } from 'viem';
 
 import type { WorkFormValue, WorkListItem } from '../types';
 import { readContract, writeContract } from '../utils/contract';
-import { fetchContractOwner, fetchContractAdmin, updateContractAdmin } from './common';
+import { updateContractAdmin } from './common';
 
 type WorkId = number | bigint;
 
 const contractName = 'paidWorks';
 
-const fetchOwner = fetchContractOwner.bind(null, contractName);
-const fetchAdmin = fetchContractAdmin.bind(null, contractName);
 const updateAdmin = updateContractAdmin.bind(null, contractName);
 
 async function fetchList() {
@@ -42,8 +40,7 @@ async function buyOne(id: WorkId, price: bigint) {
 }
 
 export {
-  fetchOwner, fetchAdmin, updateAdmin,
+  updateAdmin,
   fetchList, fetchOne,
-  insertOne, listForSales,
-  buyOne,
+  insertOne, listForSales, buyOne,
 };

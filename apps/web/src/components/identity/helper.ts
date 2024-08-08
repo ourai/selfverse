@@ -13,11 +13,11 @@ function getDefaultIdentity() {
 }
 
 function resolveContract(pathname: string) {
-  if (pathname.startsWith('/works') || pathname.startsWith('/cellar')) {
+  if (pathname.startsWith('/works') || pathname.startsWith('/cellar/works')) {
     return 'paidWorks';
   }
 
-  if (pathname.startsWith('/donation')) {
+  if (pathname.startsWith('/donation') || pathname.startsWith('/cellar/donation')) {
     return 'donation';
   }
 

@@ -3,7 +3,7 @@ import { type TableProps, Table, Image, Space, Button, Modal, Form, Popconfirm, 
 import { isAddress, formatEther } from 'viem';
 
 import type { WorkFormValue, WorkListItem } from '../../types';
-import { fetchOwner, fetchAdmin, updateAdmin, fetchList, insertOne, listForSales } from '../../services/works';
+import { updateAdmin, fetchList, insertOne, listForSales } from '../../services/works';
 import AdminOnly from '../../components/admin-only';
 
 import AdminWorkForm from './AdminWorkForm';
@@ -47,7 +47,7 @@ function AdminWorksList() {
           setRenderedAt(Date.now());
         })
         .catch(err => {
-          messageApi.error(`Error occurred during inserting ${chosenWork.title}`);
+          messageApi.error(`Error occurred during inserting ${chosenWork.title}.`);
           console.log('[ERROR]', err);
         })
         .finally(() => setUpdating(false))
@@ -162,7 +162,7 @@ function AdminWorksList() {
   ];
 
   return (
-    <AdminOnly fetchOwner={fetchOwner} fetchAdmin={fetchAdmin} updateAdmin={updateAdmin} busy={updating}>
+    <AdminOnly updateAdmin={updateAdmin} busy={updating}>
       {contextHolder}
       <div className={style.AdminWorksList}>
         <div className={style['AdminWorksList-header']}>
@@ -182,7 +182,8 @@ function AdminWorksList() {
         closable={!updating}
         maskClosable={false}
         keyboard={false}
-        onOk={() => form.submit()} onCancel={closeDialog}
+        onOk={() => form.submit()}
+        onCancel={closeDialog}
       >
         <AdminWorkForm form={form} initialValue={chosenWork} onSubmit={handleSubmit} />
       </Modal>

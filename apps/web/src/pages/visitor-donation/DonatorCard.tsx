@@ -1,17 +1,22 @@
 import { Card, Flex } from 'antd';
-import { CryptoPrice } from '@ant-design/web3';
+import { Address, CryptoPrice } from '@ant-design/web3';
+import { HeartOutlined, HeartFilled } from '@ant-design/icons';
 import { EthereumColorful } from '@ant-design/web3-icons';
-import { parseEther } from 'viem';
 
+import type { Donator } from '../../types';
 import style from './style.module.scss';
 
-function DonatorCard() {
+type DonatorCardProps = { dataSource: Donator };
+
+function DonatorCard({ dataSource }: DonatorCardProps) {
   return (
     <Card className={style.DonatorCard} size="small" hoverable>
-      <div className={style['DonatorCard-header']}>0xsss</div>
+      <div className={style['DonatorCard-header']}>
+        <Address address={dataSource.donator} ellipsis={{ headClip: 14, tailClip: 12 }} />
+      </div>
       <Flex className={style['DonatorCard-footer']} align="center" justify="space-between">
-        <CryptoPrice icon={<EthereumColorful />} value={parseEther('1')} />
-        <span>{Date.now()}</span>
+        <CryptoPrice value={dataSource.amount} fixed={6} icon={<EthereumColorful />} />
+        {dataSource.tokenId !== 0n ? <HeartFilled /> : <HeartOutlined />}
       </Flex>
     </Card>
   );

@@ -1,3 +1,4 @@
+.RecordCard,
 .DonatorCard {
   &-header {
     font-size: 16px;
@@ -48,6 +49,7 @@
   }
 
   &-body {
+    min-height: 480px;
     margin-top: $hp;
     padding: $hp;
     background-color: #fff;

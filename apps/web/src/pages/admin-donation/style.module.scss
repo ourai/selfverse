@@ -1,15 +1,19 @@
-.AdminWorksList {
+.AdminDonationList {
   display: flex;
   flex-direction: column;
   height: 100%;
   padding: 24px;
 
   &-header {
+    flex-shrink: 0;
+    padding-bottom: 16px;
+  }
+
+  &-headerMeta {
     display: flex;
     align-items: center;
     justify-content: space-between;
-    flex-shrink: 0;
-    padding-bottom: 16px;
+    margin-top: 16px;
   }
 
   &-title {
