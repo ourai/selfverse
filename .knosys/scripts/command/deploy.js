@@ -1,7 +1,7 @@
 const { join: joinPath } = require('path');
-const { existsSync } = require('fs');
+const { existsSync, readdirSync } = require('fs');
 
-const { createAppScriptExecutor } = require('../helper');
+const { isDirectory, createAppScriptExecutor } = require('../helper');
 
 module.exports = {
   execute: createAppScriptExecutor(({ app, appRoot, exec }, ...args) => {
@@ -10,22 +10,38 @@ module.exports = {
     }
 
     const [moduleName, networkName, needReset] = args;
-    const moduleRelativePath = `./ignition/modules/${moduleName}.ts`;
+    const modules = [];
 
-    if (!existsSync(joinPath(appRoot, moduleRelativePath))) {
-      return;
+    if (moduleName) {
+      modules.push(moduleName);
+    } else {
+      const ignitionModuleDirPath = joinPath(appRoot, 'ignition/modules');
+
+      readdirSync(ignitionModuleDirPath).forEach(dirName => {
+        if (!dirName.startsWith('.') && dirName.endsWith('.ts') && !isDirectory(joinPath(ignitionModuleDirPath, dirName))) {
+          modules.push(dirName.replace(/\.ts$/, ''));
+        }
+      });
     }
 
-    const cmds = ['pnpm run deploy', `"${moduleRelativePath}"`];
+    return modules.forEach(m => {
+      const moduleRelativePath = `./ignition/modules/${m}.ts`;
 
-    if (networkName) {
-      cmds.push(`--network ${networkName}`);
-    }
+      if (!existsSync(joinPath(appRoot, moduleRelativePath))) {
+        return;
+      }
 
-    if (needReset) {
-      cmds.push('--reset');
-    }
+      const cmds = ['pnpm run deploy', `"${moduleRelativePath}"`];
 
-    return exec(cmds.join(' '));
+      if (networkName) {
+        cmds.push(`--network ${networkName}`);
+      }
+
+      if (needReset) {
+        cmds.push('--reset');
+      }
+
+      exec(cmds.join(' '));
+    });
   }, 'chain'),
 };

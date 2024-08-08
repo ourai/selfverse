@@ -1,11 +1,12 @@
 import { readContract as readContractByWagmi, writeContract as writeContractByWagmi } from '@wagmi/core';
 
+import type { AddressHash } from '../types';
 import { PAIDWORKS_CONTRACT_ADDR, DONATION_CONTRACT_ADDR, WOBT_CONTRACT_ADDR } from '../constants';
 import abis from '../abis';
 
 import { getWagmiConfig } from './config';
 
-const contracts: Record<string, { name: keyof typeof abis; addr: `0x${string}` }> = {
+const contracts: Record<string, { name: keyof typeof abis; addr: AddressHash }> = {
   paidWorks: {
     name: 'PaidWorks',
     addr: PAIDWORKS_CONTRACT_ADDR,

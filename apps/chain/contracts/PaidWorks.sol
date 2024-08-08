@@ -15,6 +15,26 @@ contract PaidWorks is SelfGod {
     bool listing;
   }
 
+  struct WorksMetadata {
+    string title;
+    string cover;
+    string description;
+    string content;
+  }
+
+  struct WorksWithMetadata {
+    uint256 id;
+    uint256 price;
+    address badgeContract;
+    uint256 createdAt;
+    uint256 listedAt;
+    bool listing;
+    string title;
+    string cover;
+    string description;
+    string content;
+  }
+
   struct SoldWorks {
     uint256 id;
     address buyer;
@@ -23,26 +43,49 @@ contract PaidWorks is SelfGod {
 
   uint256[] private _worksIds;
   mapping(uint256 => Works) private _publishedWorks;
+  mapping(uint256 => WorksMetadata) private _metadataForWorks;
   mapping(uint256 => SoldWorks) private _soldWorks;
 
-  function add(uint256 price, address badgeContract) public onlyAdmin {
+  function add(uint256 price, address badgeContract) public onlyAdmin returns (uint256) {
     uint256 id = _worksIds.length + 1;
     _publishedWorks[id] = Works(id, price, badgeContract, block.timestamp, 0, false);
     _worksIds.push(id);
+    return id;
   }
 
-  function add(uint256 price) external {
-    add(price, address(0));
+  function add(uint256 price) external returns (uint256) {
+    return add(price, address(0));
+  }
+
+  function _checkExists(uint256 id) private view {
+    require(_publishedWorks[id].createdAt != 0, "Specific works does't exist.");
+  }
+
+  function updatePrice(uint256 id, uint256 price) external onlyAdmin {
+    _checkExists(id);
+    _publishedWorks[id].price = price;
+  }
+
+  function updateBadge(uint256 id, address badgeContract) external onlyAdmin {
+    _checkExists(id);
+    _publishedWorks[id].badgeContract = badgeContract;
+  }
+
+  function updateMetadata(
+    uint256 id,
+    string calldata title,
+    string calldata cover,
+    string calldata description,
+    string calldata content
+  ) external onlyAdmin {
+    _checkExists(id);
+    _metadataForWorks[id] = WorksMetadata(title, cover, description, content);
   }
 
   // function remove(uint256 id) external onlyAdmin {
   //   _checkExists(id);
   //   // TODO: remove item
   // }
-
-  function _checkExists(uint256 id) private view {
-    require(_publishedWorks[id].createdAt != 0, "Specific works does't exist.");
-  }
 
   function sell(uint256 id) external onlyAdmin {
     _checkExists(id);
@@ -72,12 +115,31 @@ contract PaidWorks is SelfGod {
     }
   }
 
-  function getAllWorks() external view returns (Works[] memory) {
+  function getAllWorks() external view returns (WorksWithMetadata[] memory) {
     uint256 total = _worksIds.length;
-    Works[] memory allWorks = new Works[](total);
+    WorksWithMetadata[] memory allWorks = new WorksWithMetadata[](total);
+
+    uint256 id;
+    Works memory works;
+    WorksMetadata memory metadata;
 
     for (uint256 i; i < total; i++) {
-      allWorks[i] = _publishedWorks[_worksIds[i]];
+      id = _worksIds[i];
+      works = _publishedWorks[id];
+      metadata = _metadataForWorks[id];
+
+      allWorks[i] = WorksWithMetadata(
+        works.id,
+        works.price,
+        works.badgeContract,
+        works.createdAt,
+        works.listedAt,
+        works.listing,
+        metadata.title,
+        metadata.cover,
+        metadata.description,
+        metadata.content
+      );
     }
 
     return allWorks;

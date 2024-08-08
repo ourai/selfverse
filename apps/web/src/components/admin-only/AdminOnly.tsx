@@ -2,15 +2,17 @@ import { type PropsWithChildren, type ReactNode, useState, useEffect } from 'rea
 import { Form, Input, Button, Spin, Modal, message } from 'antd';
 import { useAccount } from '@ant-design/web3';
 
+import type { AddressHash } from '../../types';
 import style from './style.module.scss';
 
 type AdminOnlyProps = PropsWithChildren<{
+  busy: boolean;
   fetchOwner: () => Promise<string>;
   fetchAdmin: () => Promise<string>;
-  updateAdmin: (address: `0x${string}`) => Promise<any>;
+  updateAdmin: (address: AddressHash) => Promise<any>;
 }>;
 
-function AdminOnly({ fetchOwner, fetchAdmin, updateAdmin, children }: AdminOnlyProps) {
+function AdminOnly({ busy, fetchOwner, fetchAdmin, updateAdmin, children }: AdminOnlyProps) {
   const [owner, setOwner] = useState('');
   const [admin, setAdmin] = useState('');
   const [checked, setChecked] = useState(false);
@@ -34,7 +36,7 @@ function AdminOnly({ fetchOwner, fetchAdmin, updateAdmin, children }: AdminOnlyP
       return;
     }
 
-    updateAdmin(newAdmin as `0x${string}`)
+    updateAdmin(newAdmin as AddressHash)
       .then(() => messageApi.success(`Admin has updated to ${newAdmin}.`))
       .catch(err => {
         messageApi.error('Error occurred when update admin.');
@@ -74,8 +76,8 @@ function AdminOnly({ fetchOwner, fetchAdmin, updateAdmin, children }: AdminOnlyP
     resolvedChildren = (
       <div style={{ maxWidth: 600, margin: '0 auto', paddingTop: 100 }}>
         <Form
-          labelCol={{ span: 8 }}
-          wrapperCol={{ span: 16 }}
+          labelCol={{ span: 4 }}
+          wrapperCol={{ span: 20 }}
           initialValues={{ address: admin }}
           autoComplete="off"
           onFinish={handleAdminFormSubmit}
@@ -87,7 +89,7 @@ function AdminOnly({ fetchOwner, fetchAdmin, updateAdmin, children }: AdminOnlyP
           >
             <Input />
           </Form.Item>
-          <Form.Item wrapperCol={{ offset: 8, span: 16 }}>
+          <Form.Item wrapperCol={{ offset: 4, span: 20 }}>
             <Button type="primary" htmlType="submit">Submit</Button>
           </Form.Item>
         </Form>
@@ -100,7 +102,7 @@ function AdminOnly({ fetchOwner, fetchAdmin, updateAdmin, children }: AdminOnlyP
   }
 
   return (
-    <Spin wrapperClassName={style.AdminOnly} spinning={updating || !checked}>
+    <Spin wrapperClassName={style.AdminOnly} spinning={busy || updating || !checked}>
       {contextHolder}
       {resolvedChildren}
     </Spin>
