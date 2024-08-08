@@ -46,20 +46,38 @@ contract PaidWorks is SelfGod {
   mapping(uint256 => WorksMetadata) private _metadataForWorks;
   mapping(uint256 => SoldWorks) private _soldWorks;
 
-  function add(uint256 price, address badgeContract) public onlyAdmin returns (uint256) {
-    uint256 id = _worksIds.length + 1;
-    _publishedWorks[id] = Works(id, price, badgeContract, block.timestamp, 0, false);
-    _worksIds.push(id);
-    return id;
-  }
-
-  function add(uint256 price) external returns (uint256) {
-    return add(price, address(0));
-  }
-
   function _checkExists(uint256 id) private view {
     require(_publishedWorks[id].createdAt != 0, "Specific works does't exist.");
   }
+
+  function updateMetadata(
+    uint256 id,
+    string calldata title,
+    string calldata cover,
+    string calldata description,
+    string calldata content
+  ) public onlyAdmin {
+    _checkExists(id);
+    _metadataForWorks[id] = WorksMetadata(title, cover, description, content);
+  }
+
+  function add(
+    uint256 price,
+    address badgeContract,
+    string calldata title,
+    string calldata cover,
+    string calldata description,
+    string calldata content
+  ) public onlyAdmin {
+    uint256 id = _worksIds.length + 1;
+    _publishedWorks[id] = Works(id, price, badgeContract, block.timestamp, 0, false);
+    _worksIds.push(id);
+    updateMetadata(id, title, cover, description, content);
+  }
+
+  // function add(uint256 price) external {
+  //   add(price, address(0));
+  // }
 
   function updatePrice(uint256 id, uint256 price) external onlyAdmin {
     _checkExists(id);
@@ -69,17 +87,6 @@ contract PaidWorks is SelfGod {
   function updateBadge(uint256 id, address badgeContract) external onlyAdmin {
     _checkExists(id);
     _publishedWorks[id].badgeContract = badgeContract;
-  }
-
-  function updateMetadata(
-    uint256 id,
-    string calldata title,
-    string calldata cover,
-    string calldata description,
-    string calldata content
-  ) external onlyAdmin {
-    _checkExists(id);
-    _metadataForWorks[id] = WorksMetadata(title, cover, description, content);
   }
 
   // function remove(uint256 id) external onlyAdmin {

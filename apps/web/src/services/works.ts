@@ -14,22 +14,19 @@ async function fetchList() {
   return readContract(contractName, 'getAllWorks');
 }
 
-async function insertOne({ price, badgeContract, ...others }: WorkFormValue) {
-  const args: [bigint, string?] = [parseEther(`${price}`)];
-
-  if (badgeContract) {
-    args.push(badgeContract);
-  }
-
-  const id = await writeContract(contractName, 'add', args);
-
-  await writeContract(contractName, 'updateMetadata', [
-    id,
-    others.title,
-    others.cover,
-    others.description,
-    others.content || '',
+async function insertOne(value: WorkFormValue) {
+  return await writeContract(contractName, 'add', [
+    parseEther(`${value.price}`),
+    value.badgeContract,
+    value.title,
+    value.cover,
+    value.description,
+    value.content || '',
   ])
 }
 
-export { fetchOwner, fetchAdmin, updateAdmin, fetchList, insertOne };
+async function listForSales(id: number, listing?: boolean) {
+  return writeContract(contractName, listing !== false ? 'sell' : 'unlist', [id]);
+}
+
+export { fetchOwner, fetchAdmin, updateAdmin, fetchList, insertOne, listForSales };

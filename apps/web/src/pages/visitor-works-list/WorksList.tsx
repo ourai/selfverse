@@ -2,20 +2,21 @@ import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { List, Card, Popconfirm, message } from 'antd';
 
+import type { WorkListItem } from '../../types';
 import { resolvePrice } from '../../utils';
 import { fetchList } from '../../services/works';
 
 import style from './style.module.scss';
 
 function WorksList() {
-  const [works, setWorks] = useState([]);
+  const [works, setWorks] = useState<WorkListItem[]>([]);
   const navigate = useNavigate();
   const [messageApi, contextHolder] = message.useMessage();
-  // const works = allWorks.filter(item => item.listing);
 
   useEffect(() => {
     fetchList().then(res => {
       console.log('res', res);
+      setWorks((res as WorkListItem[]).filter(item => item.listing));
     })
   }, [])
 

@@ -6,13 +6,13 @@ import type { AddressHash } from '../../types';
 import style from './style.module.scss';
 
 type AdminOnlyProps = PropsWithChildren<{
-  busy: boolean;
   fetchOwner: () => Promise<string>;
   fetchAdmin: () => Promise<string>;
   updateAdmin: (address: AddressHash) => Promise<any>;
+  busy: boolean;
 }>;
 
-function AdminOnly({ busy, fetchOwner, fetchAdmin, updateAdmin, children }: AdminOnlyProps) {
+function AdminOnly(props: AdminOnlyProps) {
   const [owner, setOwner] = useState('');
   const [admin, setAdmin] = useState('');
   const [checked, setChecked] = useState(false);
@@ -22,10 +22,10 @@ function AdminOnly({ busy, fetchOwner, fetchAdmin, updateAdmin, children }: Admi
   const [newAdmin, setNewAdmin] = useState('');
   const ownerSignedIn = address === owner;
 
-  let resolvedChildren: ReactNode = children;
+  let resolvedChildren: ReactNode;
 
   useEffect(() => {
-    Promise.all([fetchOwner(), fetchAdmin()]).then(results => {
+    Promise.all([props.fetchOwner(), props.fetchAdmin()]).then(results => {
       setOwner(results[0]);
       setAdmin(results[1]);
     }).finally(() => setChecked(true));
@@ -36,7 +36,7 @@ function AdminOnly({ busy, fetchOwner, fetchAdmin, updateAdmin, children }: Admi
       return;
     }
 
-    updateAdmin(newAdmin as AddressHash)
+    props.updateAdmin(newAdmin as AddressHash)
       .then(() => messageApi.success(`Admin has updated to ${newAdmin}.`))
       .catch(err => {
         messageApi.error('Error occurred when update admin.');
@@ -96,13 +96,13 @@ function AdminOnly({ busy, fetchOwner, fetchAdmin, updateAdmin, children }: Admi
       </div>
     );
   } else if (address === admin) {
-    resolvedChildren = children;
+    resolvedChildren = props.children;
   } else if (checked) {
     resolvedChildren = <div>You shouldn't be here.</div>
   }
 
   return (
-    <Spin wrapperClassName={style.AdminOnly} spinning={busy || updating || !checked}>
+    <Spin wrapperClassName={style.AdminOnly} spinning={props.busy || updating || !checked}>
       {contextHolder}
       {resolvedChildren}
     </Spin>
