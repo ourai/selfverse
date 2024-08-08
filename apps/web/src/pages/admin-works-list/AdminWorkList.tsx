@@ -44,6 +44,7 @@ function AdminWorksList() {
         .then(() => {
           messageApi.success(`${chosenWork.title} has been successfully added.`);
           closeDialog();
+          setRenderedAt(Date.now());
         })
         .catch(err => {
           messageApi.error(`Error occurred during inserting ${chosenWork.title}`);

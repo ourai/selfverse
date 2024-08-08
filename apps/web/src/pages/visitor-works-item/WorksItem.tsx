@@ -1,11 +1,11 @@
 import { useState, useEffect } from 'react';
 import { useParams } from 'react-router-dom';
-import { Flex, Button, Avatar, Tabs, type TabsProps, message } from 'antd';
+import { Flex, Button, Avatar, Tabs, type TabsProps, Popconfirm, message } from 'antd';
 import { UserOutlined } from '@ant-design/icons';
 
 import type { WorkListItem } from '../../types';
 import { resolvePrice } from '../../utils';
-import { fetchOne } from '../../services/works';
+import { fetchOne, buyOne } from '../../services/works';
 import { useIdentityContext } from '../../components/identity';
 
 import style from './style.module.scss';
@@ -16,6 +16,7 @@ function WorksItem() {
   const [fetched, setFetched] = useState(false);
   const { id } = useParams();
   const [messageApi, contextHolder] = message.useMessage();
+  const [renderedAt, setRenderedAt] = useState(Date.now());
 
   const buyers = [];
 
@@ -68,6 +69,16 @@ function WorksItem() {
     ];
   }
 
+  const handleBuy = (item: WorkListItem) => buyOne(item.id, BigInt(item.price))
+    .then(() => {
+      messageApi.success('Thank you!');
+      setRenderedAt(Date.now());
+    })
+    .catch(err => {
+      messageApi.error(`Error occurred during buying ${item.title}.`);
+      console.log('[ERROR]', err);
+    });
+
   return (
     <>
       {contextHolder}
@@ -84,7 +95,15 @@ function WorksItem() {
               </div>
               <Flex className={style['WorksItem-headerMeta']} align="center" justify="space-between">
                 {identity.checked && identity.visitor && (
-                  <Button type="primary" size="large" disabled={!buyable}>{btnText}</Button>
+                  <Popconfirm
+                    title={`Buy ${record.title}`}
+                    description={`Are you sure to buy ${record.title}? You will pay ${resolvePrice(record.price)} for it.`}
+                    okText="Yes"
+                    cancelText="No"
+                    onConfirm={handleBuy.bind(null, record)}
+                  >
+                    <Button type="primary" size="large" disabled={!buyable}>{btnText}</Button>
+                  </Popconfirm>
                 )}
                 {buyers.length > 0 && (
                   <div>

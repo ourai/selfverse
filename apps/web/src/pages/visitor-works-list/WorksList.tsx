@@ -4,7 +4,7 @@ import { List, Card, Popconfirm, message } from 'antd';
 
 import type { WorkListItem } from '../../types';
 import { resolvePrice } from '../../utils';
-import { fetchList } from '../../services/works';
+import { fetchList, buyOne } from '../../services/works';
 import { useIdentityContext } from '../../components/identity';
 
 import style from './style.module.scss';
@@ -14,22 +14,29 @@ function WorksList() {
   const [works, setWorks] = useState<WorkListItem[]>([]);
   const navigate = useNavigate();
   const [messageApi, contextHolder] = message.useMessage();
+  const [renderedAt, setRenderedAt] = useState(Date.now());
 
   useEffect(() => {
     fetchList().then(res => {
       console.log('res', res);
       setWorks((res as WorkListItem[]).filter(item => item.listing));
     })
-  }, [])
+  }, [renderedAt])
 
   const handleStopPropagation = e => {
     e.preventDefault();
     e.stopPropagation();
   }
 
-  const handleConfirm = () => {
-    messageApi.success('Thank you!');
-  }
+  const handleBuy = (item: WorkListItem) => buyOne(item.id, BigInt(item.price))
+    .then(() => {
+      messageApi.success('Thank you!');
+      setRenderedAt(Date.now());
+    })
+    .catch(err => {
+      messageApi.error(`Error occurred during buying ${item.title}.`);
+      console.log('[ERROR]', err);
+    });
 
   return (
     <div className={style.WorksList}>
@@ -49,7 +56,7 @@ function WorksList() {
                       description={`Are you sure to buy ${item.title}? You will pay ${resolvePrice(item.price)} for it.`}
                       okText="Yes"
                       cancelText="No"
-                      onConfirm={handleConfirm}
+                      onConfirm={handleBuy.bind(null, item)}
                     >
                       <div>{item.price > 0 ? `Pay ${resolvePrice(item.price)}` : 'Free'}</div>
                     </Popconfirm>

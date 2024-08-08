@@ -27,10 +27,10 @@ async function readContract(contract: string, functionName: string, args?: any[]
   return readContractByWagmi(getWagmiConfig() as any, { address: addr, abi: abis[name], functionName, args });
 }
 
-async function writeContract(contract: string, functionName: string, args?: any[]) {
+async function writeContract(contract: string, functionName: string, args?: any[], value?: any) {
   const { name, addr } = contracts[contract];
 
-  return writeContractByWagmi(getWagmiConfig() as any, { address: addr, abi: abis[name], functionName, args });
+  return writeContractByWagmi(getWagmiConfig() as any, { address: addr, abi: abis[name], functionName, args, value });
 }
 
 export { readContract, writeContract };
