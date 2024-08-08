@@ -3,6 +3,7 @@ import { ConfigProvider } from 'antd';
 import { WagmiWeb3ConfigProvider, MetaMask, OkxWallet, Sepolia, Hardhat } from '@ant-design/web3-wagmi';
 
 import { isHardhatEnabled, getWagmiConfig } from '../../utils';
+import Identity from '../identity';
 
 function Container(props: PropsWithChildren) {
   return (
@@ -13,7 +14,9 @@ function Container(props: PropsWithChildren) {
         wallets={[MetaMask(), OkxWallet()]}
         eip6963={{ autoAddInjectedWallets: true }}
       >
-        {props.children}
+        <Identity>
+          {props.children}
+        </Identity>
       </WagmiWeb3ConfigProvider>
     </ConfigProvider>
   )

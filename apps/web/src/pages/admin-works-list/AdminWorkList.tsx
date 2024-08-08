@@ -27,10 +27,7 @@ function AdminWorksList() {
 
   useEffect(() => {
     fetchList()
-      .then(res => {
-        console.log('res in admin works', res);
-        setWorks(res as WorkListItem[]);
-      })
+      .then(res => setWorks(res as WorkListItem[]))
       .catch(err => {
         messageApi.error('Error occurred during fetching works.');
         console.log('[ERROR]', err);
@@ -44,10 +41,9 @@ function AdminWorksList() {
 
     if (chosenWork.id) {} else {
       insertOne(chosenWork)
-        .then(res => {
+        .then(() => {
           messageApi.success(`${chosenWork.title} has been successfully added.`);
           closeDialog();
-          console.log(res);
         })
         .catch(err => {
           messageApi.error(`Error occurred during inserting ${chosenWork.title}`);
