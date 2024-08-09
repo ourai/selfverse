@@ -19,7 +19,7 @@ function WorksList() {
   const { account } = useAccount();
 
   useEffect(() => {
-    fetchList(account.address).then(res => {
+    fetchList(account && account.address).then(res => {
       console.log('res', res);
       setWorks((res as WorkListItem[]).filter(item => item.listing));
     })

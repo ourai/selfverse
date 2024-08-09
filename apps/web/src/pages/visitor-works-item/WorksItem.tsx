@@ -28,7 +28,7 @@ function WorksItem() {
 
     const workId = BigInt(id!);
 
-    Promise.all([fetchOne(workId, account.address), fetchBuyerList(workId)])
+    Promise.all([fetchOne(workId, account && account.address), fetchBuyerList(workId)])
       .then(results => {
         console.log(results);
         setRecord(results[0]);
