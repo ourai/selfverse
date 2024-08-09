@@ -12,6 +12,7 @@ type WorkFormValue = {
 
 type WorkListItem = Required<WorkFormValue> & {
   listing: boolean;
+  bought: boolean;
 };
 
 type DonationRecord = {
@@ -24,4 +25,9 @@ type Donator = Omit<DonationRecord, 'donatedAt'> & {
   tokenId: bigint;
 };
 
-export type { AddressHash, WorkFormValue, WorkListItem, DonationRecord, Donator }
+type Buyer = {
+  buyer: AddressHash;
+  soldAt: bigint;
+};
+
+export type { AddressHash, WorkFormValue, WorkListItem, DonationRecord, Donator, Buyer }

@@ -1,13 +1,15 @@
 import { useState, useEffect } from 'react';
 import { useParams } from 'react-router-dom';
-import { Flex, Button, Avatar, Tabs, type TabsProps, Popconfirm, message } from 'antd';
+import { Flex, Button, Avatar, Tabs, type TabsProps, Popconfirm, List, message } from 'antd';
 import { UserOutlined } from '@ant-design/icons';
+import { useAccount } from '@ant-design/web3';
 
 import type { WorkListItem } from '../../types';
 import { resolvePrice } from '../../utils';
-import { fetchOne, buyOne } from '../../services/works';
+import { fetchOne, fetchBuyerList, buyOne } from '../../services/works';
 import { useIdentityContext } from '../../components/identity';
 
+import BuyerCard from './BuyerCard';
 import style from './style.module.scss';
 
 function WorksItem() {
@@ -16,18 +18,21 @@ function WorksItem() {
   const [fetched, setFetched] = useState(false);
   const { id } = useParams();
   const [messageApi, contextHolder] = message.useMessage();
-  const [renderedAt, setRenderedAt] = useState(Date.now());
-
-  const buyers = [];
+  const [buyers, setBuyers] = useState([]);
+  const { account } = useAccount();
 
   useEffect(() => {
     if (fetched) {
       return;
     }
 
-    fetchOne(BigInt(id!))
-      .then(res => {
-        setRecord(res);
+    const workId = BigInt(id!);
+
+    Promise.all([fetchOne(workId, account.address), fetchBuyerList(workId)])
+      .then(results => {
+        console.log(results);
+        setRecord(results[0]);
+        setBuyers(results[1]);
         setFetched(true);
       })
       .catch(err => {
@@ -43,8 +48,12 @@ function WorksItem() {
   if (record) {
     if (identity.checked && identity.visitor) {
       if (record.listing) {
-        buyable = true;
-        btnText = `Pay ${resolvePrice(record.price)}`;
+        if (record.bought) {
+          btnText = 'Purchased';
+        } else {
+          buyable = true;
+          btnText = `Pay ${resolvePrice(record.price)}`;
+        }
       } else {
         btnText = 'Not listed for sales';
       }
@@ -64,7 +73,17 @@ function WorksItem() {
       {
         key: 'buyer',
         label: buyers.length > 0 ? `Supporters (${buyers.length})` : 'Supporters',
-        children: '暂无',
+        children: (
+          <List
+            dataSource={buyers.slice().reverse()}
+            grid={{ gutter: 16, column: 4 }}
+            renderItem={item => (
+              <List.Item>
+                <BuyerCard dataSource={item} />
+              </List.Item>
+            )}
+          />
+        ),
       },
     ];
   }
@@ -72,7 +91,7 @@ function WorksItem() {
   const handleBuy = (item: WorkListItem) => buyOne(item.id, BigInt(item.price))
     .then(() => {
       messageApi.success('Thank you!');
-      setRenderedAt(Date.now());
+      setFetched(false);
     })
     .catch(err => {
       messageApi.error(`Error occurred during buying ${item.title}.`);

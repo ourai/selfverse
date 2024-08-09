@@ -86,7 +86,7 @@ function AdminDonation() {
           <div className={style['AdminDonationList-headerMeta']}>
             <span className={style['AdminDonationList-title']}>Donations ({donations.length})</span>
             <Space>
-              <Button type="primary" disabled>Withdraw</Button>
+              <Button type="primary" onClick={() => messageApi.error('Not supported operation. Couldn\'t withdraw for now.')}>Withdraw</Button>
             </Space>
           </div>
         </div>

@@ -7,7 +7,6 @@ type FormProps = Required<AntdFormProps<WorkFormValue>>;
 
 type AdminWorkFormProps = {
   readonly form: FormProps['form'];
-  readonly initialValue: FormProps['initialValues'];
   readonly onSubmit: FormProps['onFinish'];
 };
 
@@ -17,7 +16,6 @@ function AdminWorkForm(props: AdminWorkFormProps) {
       form={props.form}
       labelCol={{ span: 6 }}
       wrapperCol={{ span: 18 }}
-      initialValues={props.initialValue}
       onFinish={props.onSubmit}
       autoComplete="off"
     >
@@ -54,6 +52,9 @@ function AdminWorkForm(props: AdminWorkFormProps) {
       </Form.Item>
       <Form.Item label="Content" name="content">
         <Input.TextArea placeholder="Introduce your work patiently." autoSize={{ minRows: 4, maxRows: 12 }} />
+      </Form.Item>
+      <Form.Item name="id" style={{ display: 'none' }}>
+        <Input type="hidden" />
       </Form.Item>
     </Form>
   );

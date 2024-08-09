@@ -33,18 +33,24 @@ contract PaidWorks is SelfGod {
     string cover;
     string description;
     string content;
+    bool bought;
   }
 
-  struct SoldWorks {
-    uint256 id;
+  struct WorksBuyer {
     address buyer;
     uint256 soldAt;
   }
 
+  struct SoldRecord {
+    WorksBuyer[] buyers;
+  }
+
   uint256[] private _worksIds;
+
   mapping(uint256 => Works) private _publishedWorks;
   mapping(uint256 => WorksMetadata) private _metadataForWorks;
-  mapping(uint256 => SoldWorks) private _soldWorks;
+  mapping(uint256 => SoldRecord) private _soldRecords;
+  mapping(uint256 => mapping(address => bool)) private _buyers;
 
   function _checkExists(uint256 id) private view {
     require(_publishedWorks[id].createdAt != 0, "Specific works does't exist.");
@@ -114,7 +120,10 @@ contract PaidWorks is SelfGod {
     require(msg.value == targetWorks.price, "Insufficient payment.");
 
     address buyer = _msgSender();
-    _soldWorks[id] = SoldWorks(id, buyer, block.timestamp);
+
+    require(_buyers[id][buyer] == false, "Already purchased.");
+    _buyers[id][buyer] = true;
+    _soldRecords[id].buyers.push(WorksBuyer(buyer, block.timestamp));
 
     if (targetWorks.badgeContract != address(0)) {
       IAchievementToken badge = IAchievementToken(targetWorks.badgeContract);
@@ -122,7 +131,7 @@ contract PaidWorks is SelfGod {
     }
   }
 
-  function getAllWorks() external view returns (WorksWithMetadata[] memory) {
+  function getAllWorks(address operator) public view returns (WorksWithMetadata[] memory) {
     uint256 total = _worksIds.length;
     WorksWithMetadata[] memory allWorks = new WorksWithMetadata[](total);
 
@@ -145,10 +154,20 @@ contract PaidWorks is SelfGod {
         metadata.title,
         metadata.cover,
         metadata.description,
-        metadata.content
+        metadata.content,
+        _buyers[id][operator]
       );
     }
 
     return allWorks;
+  }
+
+  function getAllWorks() external view returns (WorksWithMetadata[] memory) {
+    return getAllWorks(_msgSender());
+  }
+
+  function getBuyers(uint256 id) external view returns (WorksBuyer[] memory) {
+    _checkExists(id);
+    return _soldRecords[id].buyers;
   }
 }

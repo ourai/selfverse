@@ -1,6 +1,6 @@
 import { parseEther } from 'viem';
 
-import type { WorkFormValue, WorkListItem } from '../types';
+import type { AddressHash, WorkFormValue, WorkListItem } from '../types';
 import { readContract, writeContract } from '../utils/contract';
 import { updateContractAdmin } from './common';
 
@@ -10,14 +10,18 @@ const contractName = 'paidWorks';
 
 const updateAdmin = updateContractAdmin.bind(null, contractName);
 
-async function fetchList() {
-  return readContract(contractName, 'getAllWorks');
+async function fetchList(operator?: AddressHash) {
+  return readContract(contractName, 'getAllWorks', operator ? [operator] : []);
 }
 
-async function fetchOne(id: WorkId) {
-  const list = (await fetchList()) as WorkListItem[];
+async function fetchOne(id: WorkId, operator?: AddressHash) {
+  const list = (await fetchList(operator)) as WorkListItem[];
 
   return list.find(item => item.id === id);
+}
+
+async function fetchBuyerList(id: WorkId) {
+  return readContract(contractName, 'getBuyers', [id]);
 }
 
 async function insertOne(value: WorkFormValue) {
@@ -41,6 +45,6 @@ async function buyOne(id: WorkId, price: bigint) {
 
 export {
   updateAdmin,
-  fetchList, fetchOne,
+  fetchList, fetchOne, fetchBuyerList,
   insertOne, listForSales, buyOne,
 };

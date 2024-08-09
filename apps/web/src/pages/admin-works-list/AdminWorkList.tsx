@@ -9,17 +9,19 @@ import AdminOnly from '../../components/admin-only';
 import AdminWorkForm from './AdminWorkForm';
 import style from './style.module.scss';
 
-const defaultWorkFormValue: WorkFormValue = {
-  title: '',
-  cover: '',
-  price: 0,
-  description: '',
-};
+function getDefaultWorkFormValue(): WorkFormValue {
+  return {
+    title: '',
+    cover: '',
+    price: 0,
+    description: '',
+  };
+}
 
 function AdminWorksList() {
   const [works, setWorks] = useState<WorkListItem[]>([]);
   const [dialogVisible, setDialogVisible] = useState(false);
-  const [chosenWork, setChosenWork] = useState<WorkFormValue>(defaultWorkFormValue);
+  const [chosenWork, setChosenWork] = useState<WorkFormValue>(getDefaultWorkFormValue());
   const [form] = Form.useForm<WorkFormValue>();
   const [messageApi, contextHolder] = message.useMessage();
   const [updating, setUpdating] = useState(false);
@@ -39,7 +41,11 @@ function AdminWorksList() {
       return;
     }
 
-    if (chosenWork.id) {} else {
+    if (chosenWork.id) {
+      messageApi.warning('暂不支持此功能');
+      closeDialog();
+      setUpdating(false);
+    } else {
       insertOne(chosenWork)
         .then(() => {
           messageApi.success(`${chosenWork.title} has been successfully added.`);
@@ -54,9 +60,18 @@ function AdminWorksList() {
     }
   }, [chosenWork, updating]);
 
+  const openDialog = (work: WorkFormValue) => {
+    form.setFieldsValue(work);
+    setDialogVisible(true);
+  };
+
   const closeDialog = () => {
     form.resetFields();
     setDialogVisible(false);
+
+    if (updating) {
+      setUpdating(false);
+    }
   };
 
   const handleSubmit = (values: WorkFormValue) => {
@@ -153,7 +168,7 @@ function AdminWorksList() {
             >
               <Button size="small">{btnText}</Button>
             </Popconfirm>
-            <Button size="small" onClick={() => setChosenWork(item)}>Edit</Button>
+            <Button size="small" onClick={openDialog.bind(null, item)}>Edit</Button>
             <Button size="small" danger onClick={() => messageApi.error('Not supported operation. Couldn\'t be removed for now.')}>Remove</Button>
           </Space>
         )
@@ -168,7 +183,7 @@ function AdminWorksList() {
         <div className={style['AdminWorksList-header']}>
           <span className={style['AdminWorksList-title']}>Works ({works.length})</span>
           <Space>
-            <Button type="primary" onClick={() => setDialogVisible(true)}>Create</Button>
+            <Button type="primary" onClick={openDialog.bind(null, getDefaultWorkFormValue())}>Create</Button>
           </Space>
         </div>
         <div className={style['AdminWorksList-body']}>
@@ -176,7 +191,7 @@ function AdminWorksList() {
         </div>
       </div>
       <Modal
-        title={`${chosenWork.id ? 'Edit' : 'Add'} work`}
+        title={`${form.getFieldValue('id') ? 'Edit' : 'Add'} work`}
         open={dialogVisible}
         confirmLoading={updating}
         closable={!updating}
@@ -185,7 +200,7 @@ function AdminWorksList() {
         onOk={() => form.submit()}
         onCancel={closeDialog}
       >
-        <AdminWorkForm form={form} initialValue={chosenWork} onSubmit={handleSubmit} />
+        <AdminWorkForm form={form} onSubmit={handleSubmit} />
       </Modal>
     </AdminOnly>
   );
