@@ -25,7 +25,7 @@ function WorksList() {
     })
   }, [renderedAt])
 
-  const handleStopPropagation = e => {
+  const handleStopPropagation = (e: any) => {
     e.preventDefault();
     e.stopPropagation();
   }

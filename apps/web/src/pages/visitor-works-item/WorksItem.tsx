@@ -4,7 +4,7 @@ import { Flex, Button, Avatar, Tabs, type TabsProps, Popconfirm, List, message }
 import { UserOutlined } from '@ant-design/icons';
 import { useAccount } from '@ant-design/web3';
 
-import type { WorkListItem } from '../../types';
+import type { WorkListItem, Buyer } from '../../types';
 import { resolvePrice } from '../../utils';
 import { fetchOne, fetchBuyerList, buyOne } from '../../services/works';
 import { useIdentityContext } from '../../components/identity';
@@ -18,7 +18,7 @@ function WorksItem() {
   const [fetched, setFetched] = useState(false);
   const { id } = useParams();
   const [messageApi, contextHolder] = message.useMessage();
-  const [buyers, setBuyers] = useState([]);
+  const [buyers, setBuyers] = useState<Buyer[]>([]);
   const { account } = useAccount();
 
   useEffect(() => {
