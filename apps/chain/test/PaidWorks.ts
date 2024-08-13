@@ -2,7 +2,7 @@ import { loadFixture } from '@nomicfoundation/hardhat-toolbox/network-helpers';
 import { ethers } from 'hardhat';
 import { expect } from 'chai';
 
-import { createOwnerChecker, createAdminChecker, createOperatorChecker } from './helper';
+import { ZERO_ADDRESS, catchFunc, createOwnerChecker, createAdminChecker, createOperatorChecker } from './helper';
 
 describe('PaidWorks', () => {
   async function deployPaidWorksFixture() {
@@ -29,58 +29,62 @@ describe('PaidWorks', () => {
     it('Check selling and buying', async () => {
       const { owner, admin, others, works } = await loadFixture(deployPaidWorksFixture);
       const [b1, b2] = others;
+      const freeWorkPrice = ethers.parseEther('0');
+      const paidWorkPrice = ethers.parseEther('1');
 
-      let operator, allWorks;
+      let operator = works.connect(owner);
+      expect((await operator['getAllWorks()']()).length).to.equal(0, 'Initial count of works is not 0');
 
-      operator = works.connect(owner);
-      expect((await operator.getAllWorks()).length).to.equal(0, 'Initial count of works is not 0');
-
-      try {
-        await operator['add(uint256)'](ethers.parseEther('1'));
-      } catch (err) {
-        // console.log('[ERROR]', (err as any).message);
-      }
-      expect((await operator.getAllWorks()).length).to.equal(0);
+      await catchFunc(async () => operator.add(paidWorkPrice, ZERO_ADDRESS, 'title', 'cover', 'description', 'content'));
+      expect((await operator['getAllWorks()']()).length).to.equal(0);
 
       await operator.updateAdmin(admin);
       operator = works.connect(admin);
 
+      const firstWorkPrice = freeWorkPrice;
+      const secondWorkPrice = paidWorkPrice;
+
       // Add two works
-      await Promise.all([operator['add(uint256)'](ethers.parseEther('0')), operator['add(uint256)'](ethers.parseEther('1'))]);
-      allWorks = await operator.getAllWorks();
+      await Promise.all([
+        operator.add(firstWorkPrice, ZERO_ADDRESS, 'title', 'cover', 'description', 'content'),
+        operator.add(secondWorkPrice, ZERO_ADDRESS, 'title', 'cover', 'description', 'content')
+      ]);
+      let allWorks = await operator['getAllWorks()']();
       expect(allWorks.length).to.equal(2);
-      expect(allWorks[0].price).to.equal(ethers.parseEther('0'));
-      expect(allWorks[1].price).to.equal(ethers.parseEther('1'));
+      expect(allWorks[0].price).to.equal(firstWorkPrice);
+      expect(allWorks[1].price).to.equal(secondWorkPrice);
 
       // List them for sales
       expect(allWorks[0].listing).to.equal(false);
       expect(allWorks[1].listing).to.equal(false);
       await Promise.all([operator.sell(allWorks[0].id), operator.sell(allWorks[1].id)]);
-      allWorks = await operator.getAllWorks();
+      allWorks = await operator['getAllWorks()']();
       expect(allWorks[0].listing).to.equal(true);
       expect(allWorks[1].listing).to.equal(true);
 
+      // Buy works
+      operator = works.connect(b1);
+      await catchFunc(async () => {
+        const paidWorks = allWorks.filter(({ price }) => price !== freeWorkPrice);
+        await operator.buy(paidWorks[0].id);
+      });
+      await operator.buy(allWorks[1].id, { value: secondWorkPrice });
+      operator = works.connect(b2);
+      await operator.buy(allWorks[0].id, { value: firstWorkPrice });
+
       // Unlist the free works
-      await Promise.all(allWorks.filter(item => item.price === ethers.parseEther('0')).map(item => operator.unlist(item.id)));
-      allWorks = await operator.getAllWorks();
+      operator = works.connect(admin);
+      await Promise.all(allWorks.filter(item => item.price === freeWorkPrice).map(item => operator.unlist(item.id)));
+      allWorks = await operator['getAllWorks()']();
       expect(allWorks[0].listing).to.equal(false);
       expect(allWorks[1].listing).to.equal(true);
 
-      operator = works.connect(b1);
-
-      try {
-        await operator.buy(allWorks[0].id);
-      } catch (err) {
-        // console.log('[ERROR]', (err as any).message);
-      }
-
-      try {
-        await operator.buy(allWorks[1].id);
-      } catch (err) {
-        // console.log('[ERROR]', (err as any).message);
-      }
-
-      await operator.buy(allWorks[1].id, { value: ethers.parseEther('1') });
+      const b1Bought = await operator.getBoughtWorks(b1);
+      expect(b1Bought.length).to.equal(1);
+      expect(b1Bought[0].id).to.equal(2n);
+      const b2Bought = await operator.getBoughtWorks(b2);
+      expect(b2Bought.length).to.equal(1);
+      expect(b2Bought[0].id).to.equal(1n);
     });
   });
 });

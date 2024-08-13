@@ -81,7 +81,42 @@ contract Donation is SoulboundToken {
     return donators;
   }
 
+  function _getFilteredDonationCount(address donator) private view returns (uint256) {
+    uint256 total = _allDonations.length;
+    uint256 filteredCount;
+
+    for (uint256 i; i < total; i++) {
+      if (_allDonations[i].donator == donator) {
+        filteredCount += 1;
+      }
+    }
+
+    return filteredCount;
+  }
+
+  function _getFilteredDonations(address donator) private view returns (Record[] memory) {
+    Record[] memory filtered = new Record[](_getFilteredDonationCount(donator));
+    Record memory record;
+    uint256 total = _allDonations.length;
+    uint256 nextIndex;
+
+    for (uint256 i; i < total; i++) {
+      record = _allDonations[i];
+
+      if (record.donator == donator) {
+        filtered[nextIndex] = record;
+        nextIndex += 1;
+      }
+    }
+
+    return filtered;
+  }
+
+  function getDonations(address donator) public view returns (Record[] memory) {
+    return donator == address(0) ? _allDonations : _getFilteredDonations(donator);
+  }
+
   function getDonations() external view returns (Record[] memory) {
-    return _allDonations;
+    return getDonations(address(0));
   }
 }

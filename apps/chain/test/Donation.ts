@@ -3,7 +3,7 @@ import { loadFixture } from '@nomicfoundation/hardhat-toolbox/network-helpers';
 import { ethers } from 'hardhat';
 import { expect } from 'chai';
 
-import { NFT_FAKE_BASE_URI, createOwnerChecker, createAdminChecker, createOperatorChecker } from './helper';
+import { NFT_FAKE_BASE_URI, catchFunc, createOwnerChecker, createAdminChecker, createOperatorChecker } from './helper';
 
 describe('Donation', () => {
   async function deployDonationFixture() {
@@ -33,7 +33,7 @@ describe('Donation', () => {
 
       let operator = donation.connect(d1);
 
-      expect((await operator.getDonations()).length).to.equal(0);
+      expect((await operator['getDonations()']()).length).to.equal(0);
       expect((await operator.getDonators()).length).to.equal(0);
       expect((await operator.getReceived())).to.equal(0);
 
@@ -41,29 +41,33 @@ describe('Donation', () => {
 
       // Donator d1 donated
       await operator.donate({ value: ethers.parseEther(ethAmount) });
-      expect((await operator.getDonations()).length).to.equal(1, 'Donation count isn\'t 1');
+      expect((await operator['getDonations()']()).length).to.equal(1, 'Donation count isn\'t 1');
       expect((await operator.getDonators()).length).to.equal(1, 'Donator count isn\'t 1');
       expect((await operator.getReceived())).to.equal(ethers.parseEther(ethAmount));
+      expect((await operator['getDonations(address)'](d1)).length).to.equal(1);
 
       // Donator d1 donated again
       await operator.donate({ value: ethers.parseEther(ethAmount) });
-      expect((await operator.getDonations()).length).to.equal(2, 'Donation count isn\'t 2');
+      expect((await operator['getDonations()']()).length).to.equal(2, 'Donation count isn\'t 2');
       expect((await operator.getDonators()).length).to.equal(1, 'Donator count isn\'t 1');
       expect((await operator.getReceived())).to.equal(ethers.parseEther(`${multiply(Number(ethAmount), 2)}`));
+      expect((await operator['getDonations(address)'](d1)).length).to.equal(2);
 
       operator = donation.connect(d2);
 
       // Donator d2 donated
       await operator.donate({ value: ethers.parseEther(ethAmount) });
-      expect((await operator.getDonations()).length).to.equal(3, 'Donation count isn\'t 3');
+      expect((await operator['getDonations()']()).length).to.equal(3, 'Donation count isn\'t 3');
       expect((await operator.getDonators()).length).to.equal(2, 'Donator count isn\'t 2');
       expect((await operator.getReceived())).to.equal(ethers.parseEther(`${multiply(Number(ethAmount), 3)}`));
+      expect((await operator['getDonations(address)'](d2)).length).to.equal(1);
 
       // Donator d2 donated again
       await operator.donate({ value: ethers.parseEther(ethAmount) });
-      expect((await operator.getDonations()).length).to.equal(4, 'Donation count isn\'t 4');
+      expect((await operator['getDonations()']()).length).to.equal(4, 'Donation count isn\'t 4');
       expect((await operator.getDonators()).length).to.equal(2, 'Donator count isn\'t 2');
       expect((await operator.getReceived())).to.equal(ethers.parseEther(`${multiply(Number(ethAmount), 4)}`));
+      expect((await operator['getDonations(address)'](d2)).length).to.equal(2);
     });
 
     it('Check donator badge', async () => {
@@ -104,11 +108,7 @@ describe('Donation', () => {
 
       // SBT must be not transferable
       operator = donation.connect(owner);
-      try {
-        await operator.transferFrom(d1, d2, 1n);
-      } catch (err) {
-        // console.log('[ERROR]', (err as any).message);
-      }
+      await catchFunc(async () => await operator.transferFrom(d1, d2, 1n));
       expect(await operator.ownerOf(1n)).to.equal(d1.address);
     });
   });

@@ -2,7 +2,7 @@ import { loadFixture } from '@nomicfoundation/hardhat-toolbox/network-helpers';
 import { ethers } from 'hardhat';
 import { expect } from 'chai';
 
-import { NFT_FAKE_BASE_URI, createOwnerChecker, createAdminChecker, createOperatorChecker } from './helper';
+import { NFT_FAKE_BASE_URI, catchFunc, createOwnerChecker, createAdminChecker, createOperatorChecker } from './helper';
 
 describe('WitnessOfBreakthrough', () => {
   async function deployWitnessOfBreakthroughFixture() {
@@ -33,11 +33,7 @@ describe('WitnessOfBreakthrough', () => {
       let operator = badge.connect(owner);
 
       expect(await operator.totalSupply()).to.equal(0);
-      try {
-        await operator.mint(m1);
-      } catch (err) {
-        // console.log('[ERROR]', (err as any).message);
-      }
+      await catchFunc(async () => await operator.mint(m1));
       expect(await operator.totalSupply()).to.equal(0);
 
       // Set `admin` and `operator` roles

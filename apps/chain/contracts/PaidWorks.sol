@@ -45,12 +45,26 @@ contract PaidWorks is SelfGod {
     WorksBuyer[] buyers;
   }
 
+  struct BoughtRecord {
+    uint256 id;
+    uint256 boughtAt;
+  }
+
+  struct BoughtWorks {
+    uint256 id;
+    string title;
+    string cover;
+    string description;
+    uint256 boughtAt;
+  }
+
   uint256[] private _worksIds;
 
   mapping(uint256 => Works) private _publishedWorks;
   mapping(uint256 => WorksMetadata) private _metadataForWorks;
   mapping(uint256 => SoldRecord) private _soldRecords;
   mapping(uint256 => mapping(address => bool)) private _buyers;
+  mapping(address buyer => BoughtRecord[]) private _boughtWorks;
 
   function _checkExists(uint256 id) private view {
     require(_publishedWorks[id].createdAt != 0, "Specific works does't exist.");
@@ -123,7 +137,9 @@ contract PaidWorks is SelfGod {
 
     require(_buyers[id][buyer] == false, "Already purchased.");
     _buyers[id][buyer] = true;
-    _soldRecords[id].buyers.push(WorksBuyer(buyer, block.timestamp));
+    uint256 soldAt = block.timestamp;
+    _soldRecords[id].buyers.push(WorksBuyer(buyer, soldAt));
+    _boughtWorks[buyer].push(BoughtRecord(id, soldAt));
 
     if (targetWorks.badgeContract != address(0)) {
       IAchievementToken badge = IAchievementToken(targetWorks.badgeContract);
@@ -131,32 +147,32 @@ contract PaidWorks is SelfGod {
     }
   }
 
+  function _getWorkWithMetadata(uint256 id, address operator) private view returns (WorksWithMetadata memory) {
+    _checkExists(id);
+    Works memory workBasic = _publishedWorks[id];
+    WorksMetadata memory workMetadata = _metadataForWorks[id];
+
+    return WorksWithMetadata(
+      workBasic.id,
+      workBasic.price,
+      workBasic.badgeContract,
+      workBasic.createdAt,
+      workBasic.listedAt,
+      workBasic.listing,
+      workMetadata.title,
+      workMetadata.cover,
+      workMetadata.description,
+      workMetadata.content,
+      _buyers[id][operator]
+    );
+  }
+
   function getAllWorks(address operator) public view returns (WorksWithMetadata[] memory) {
     uint256 total = _worksIds.length;
     WorksWithMetadata[] memory allWorks = new WorksWithMetadata[](total);
 
-    uint256 id;
-    Works memory works;
-    WorksMetadata memory metadata;
-
     for (uint256 i; i < total; i++) {
-      id = _worksIds[i];
-      works = _publishedWorks[id];
-      metadata = _metadataForWorks[id];
-
-      allWorks[i] = WorksWithMetadata(
-        works.id,
-        works.price,
-        works.badgeContract,
-        works.createdAt,
-        works.listedAt,
-        works.listing,
-        metadata.title,
-        metadata.cover,
-        metadata.description,
-        metadata.content,
-        _buyers[id][operator]
-      );
+      allWorks[i] = _getWorkWithMetadata(_worksIds[i], operator);
     }
 
     return allWorks;
@@ -169,5 +185,20 @@ contract PaidWorks is SelfGod {
   function getBuyers(uint256 id) external view returns (WorksBuyer[] memory) {
     _checkExists(id);
     return _soldRecords[id].buyers;
+  }
+
+  function getBoughtWorks(address buyer) external view returns (BoughtWorks[] memory) {
+    uint256 total = _boughtWorks[buyer].length;
+    BoughtWorks[] memory boughtWorks = new BoughtWorks[](total);
+    BoughtRecord memory record;
+    WorksWithMetadata memory work;
+
+    for (uint256 i; i < total; i++) {
+      record = _boughtWorks[buyer][i];
+      work = _getWorkWithMetadata(record.id, buyer);
+      boughtWorks[i] = BoughtWorks(record.id, work.title, work.cover, work.description, record.boughtAt);
+    }
+
+    return boughtWorks;
   }
 }

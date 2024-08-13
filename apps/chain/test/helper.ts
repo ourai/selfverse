@@ -1,7 +1,18 @@
 import { loadFixture } from '@nomicfoundation/hardhat-toolbox/network-helpers';
 import { expect } from 'chai';
 
+export const ZERO_ADDRESS = '0x0000000000000000000000000000000000000000';
 export const NFT_FAKE_BASE_URI = 'https://nft.fa.ke/';
+
+const defaultConsoleShown = false;
+
+export async function catchFunc(func: () => Promise<any>, consoleShown: boolean = defaultConsoleShown) {
+  try {
+    await func();
+  } catch (err) {
+    consoleShown && console.log(`[ERROR] ${(err as any).message}`);
+  }
+}
 
 export function resolveAmount(amountWithoutDecimals: number, decimals: number | bigint = 1_000_000_000_000_000_000n) {
   return amountWithoutDecimals * Math.pow(10, Number(decimals));
@@ -36,12 +47,7 @@ export function createAdminChecker(fixture: () => Promise<any>, contractKey: str
     let operator = contract.connect(o1);
     expect(await operator.getRoleMemberCount(role)).to.equal(0);
 
-    try {
-      await operator.updateAdmin(admin);
-    } catch (err) {
-      // console.log(`[ERROR] ${(err as any).message}`);
-    }
-
+    await catchFunc(async () => await operator.updateAdmin(admin));
     expect(await operator.getRoleMemberCount(role)).to.equal(0);
 
     // Set up admin to `admin` by owner
@@ -51,13 +57,7 @@ export function createAdminChecker(fixture: () => Promise<any>, contractKey: str
     expect(await operator.getRoleMember(role, 0)).to.equal(admin.address);
 
     operator = contract.connect(admin);
-
-    try {
-      await operator.updateAdmin(o1);
-    } catch (err) {
-      // console.log(`[ERROR] ${(err as any).message}`);
-    }
-
+    await catchFunc(async () => await operator.updateAdmin(o1));
     expect(await operator.getRoleMemberCount(role)).to.equal(1);
     expect(await operator.getRoleMember(role, 0)).to.equal(admin.address);
 
@@ -78,12 +78,7 @@ export function createOperatorChecker(fixture: () => Promise<any>, contractKey: 
     let operator = contract.connect(owner);
     expect(await operator.getRoleMemberCount(role)).to.equal(0);
 
-    try {
-      await operator.updateOperators([o1, o2], false);
-    } catch (err) {
-      // console.log(`[ERROR] ${(err as any).message}`);
-    }
-
+    await catchFunc(async () => await operator.updateOperators([o1, o2], false));
     expect(await operator.getRoleMemberCount(role)).to.equal(0);
 
     // Set admin to `admin` and change operator to admin
