@@ -42,7 +42,8 @@ function Passport() {
         profileModal={false}
         actionsMenu={{ extraItems }}
         avatar={identity.address ? {
-          icon: <Jazzicon seed={jsNumberForAddress(identity.address)} diameter={20} />
+          style: { borderWidth: 0 },
+          icon: <Jazzicon seed={jsNumberForAddress(identity.address)} diameter={22} />
         } : undefined}
       />
     </Connector>

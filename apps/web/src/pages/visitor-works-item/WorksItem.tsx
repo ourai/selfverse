@@ -3,6 +3,7 @@ import { useParams } from 'react-router-dom';
 import { Flex, Button, Avatar, Tabs, type TabsProps, Popconfirm, List, message } from 'antd';
 import { UserOutlined } from '@ant-design/icons';
 import { useAccount } from '@ant-design/web3';
+import Jazzicon, { jsNumberForAddress } from 'react-jazzicon';
 
 import type { WorkListItem, Buyer } from '../../types';
 import { resolvePrice } from '../../utils';
@@ -126,7 +127,12 @@ function WorksItem() {
                 {buyers.length > 0 && (
                   <div>
                     <Avatar.Group max={{ count: 10, style: { backgroundColor: '#f00' } }}>
-                      {buyers.map(() => <Avatar style={{ backgroundColor: '#0871ab' }} icon={<UserOutlined />} />)}
+                      {buyers.map(buyer => (
+                        <Avatar
+                          style={{ borderWidth: 0, backgroundColor: '#0871ab' }}
+                          icon={<Jazzicon seed={jsNumberForAddress(buyer.buyer)} diameter={32} paperStyles={{ borderRadius: '50%' }} />}
+                        />
+                      ))}
                     </Avatar.Group>
                   </div>
                 )}
