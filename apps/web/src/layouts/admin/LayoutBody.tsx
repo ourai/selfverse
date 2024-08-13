@@ -31,7 +31,7 @@ function LayoutBody() {
       {isAdmin ? (
         <>
           <Layout.Sider className={style['AdminLayout-sidebar']} theme="light">
-            <Menu items={menuItems} selectedKeys={[(currentMenu ? currentMenu.key! :menuItems[0]!.key) as string]} />
+            <Menu items={menuItems} selectedKeys={(currentMenu ? [currentMenu.key!] : []) as string[]} />
           </Layout.Sider>
           <Layout.Content className={style['AdminLayout-main']}>
             <Outlet />

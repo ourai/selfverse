@@ -31,7 +31,7 @@ function VisitorLayout() {
               <div style={{ fontSize: 24 }}>
                 <Link to="/">Selfverse</Link>
               </div>
-              <Menu items={menuItems} selectedKeys={[(currentMenu ? currentMenu.key! :menuItems[0]!.key) as string]} mode="horizontal" />
+              <Menu items={menuItems} selectedKeys={(currentMenu ? [currentMenu.key!] : []) as string[]} mode="horizontal" />
             </Space>
             <Space>
               <Passport />

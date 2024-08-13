@@ -5,6 +5,7 @@ const defaultIdentity: AccountIdentity = {
   owner: false,
   admin: false,
   visitor: false,
+  address: '',
   adminAddress: '',
 };
 

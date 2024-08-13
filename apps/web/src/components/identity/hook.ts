@@ -32,6 +32,7 @@ function useIdentity(contract: string): AccountIdentity {
     owner: address === owner,
     admin: address === admin,
     visitor: address !== owner && address !== admin,
+    address,
     adminAddress: admin,
   } : getDefaultIdentity();
 }

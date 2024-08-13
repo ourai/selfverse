@@ -4,6 +4,7 @@ import VisitorLayout from '../layouts/visitor';
 import WorksList from '../pages/visitor-works-list';
 import WorksItem from '../pages/visitor-works-item';
 import Donation from '../pages/visitor-donation';
+import Profile from '../pages/visitor-profile';
 
 export default {
   path: '/',
@@ -24,6 +25,10 @@ export default {
     {
       path: 'donation',
       element: <Donation />,
+    },
+    {
+      path: 'profile',
+      element: <Profile />,
     },
   ],
 } as RouteObject;
