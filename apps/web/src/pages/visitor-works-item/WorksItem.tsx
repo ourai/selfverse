@@ -30,7 +30,6 @@ function WorksItem() {
 
     Promise.all([fetchOne(workId, account && account.address), fetchBuyerList(workId)])
       .then(results => {
-        console.log(results);
         setRecord(results[0]);
         setBuyers(results[1]);
         setFetched(true);

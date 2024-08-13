@@ -22,7 +22,6 @@
   &-header {
     position: relative;
     padding: $hp * 1.5 $hp;
-    // background: transparent url("/banner.jpg") no-repeat 50% 50%;
 
     &::before {
       content: "\0020";
@@ -51,6 +50,10 @@
     :global(.ant-typography) {
       font-size: inherit;
     }
+  }
+
+  &-specialAchievements {
+    margin-top: 24px;
   }
 
   &-body {

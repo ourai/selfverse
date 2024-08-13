@@ -1,0 +1,6 @@
+.VisitorOnly {
+  &,
+  > :global(.ant-spin-container) {
+    height: 100%;
+  }
+}

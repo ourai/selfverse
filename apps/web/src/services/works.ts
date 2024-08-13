@@ -1,6 +1,6 @@
 import { parseEther } from 'viem';
 
-import type { AddressHash, WorkFormValue, WorkListItem, Buyer } from '../types';
+import type { AddressHash, WorkFormValue, WorkListItem, BoughtWork, Buyer } from '../types';
 import { readContract, writeContract } from '../utils/contract';
 import { updateContractAdmin } from './common';
 
@@ -43,8 +43,13 @@ async function buyOne(id: WorkId, price: bigint) {
   return writeContract(contractName, 'buy', [id], price);
 }
 
+async function fetchBoughtList(buyer: AddressHash) {
+  return readContract(contractName, 'getBoughtWorks', [buyer]) as Promise<BoughtWork[]>;
+}
+
 export {
   updateAdmin,
   fetchList, fetchOne, fetchBuyerList,
   insertOne, listForSales, buyOne,
+  fetchBoughtList,
 };

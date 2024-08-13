@@ -22,7 +22,7 @@ function resolveContract(pathname: string) {
     return 'donation';
   }
 
-  return '';
+  return 'paidWorks';
 }
 
 export { getDefaultIdentity, resolveContract };

@@ -15,6 +15,10 @@ type WorkListItem = Required<WorkFormValue> & {
   bought: boolean;
 };
 
+type BoughtWork = Pick<WorkListItem, 'id' | 'title' | 'cover' | 'description'> & {
+  boughtAt: bigint;
+}
+
 type DonationRecord = {
   donator: AddressHash;
   amount: bigint;
@@ -30,4 +34,4 @@ type Buyer = {
   soldAt: bigint;
 };
 
-export type { AddressHash, WorkFormValue, WorkListItem, DonationRecord, Donator, Buyer }
+export type { AddressHash, WorkFormValue, WorkListItem, BoughtWork, DonationRecord, Donator, Buyer }

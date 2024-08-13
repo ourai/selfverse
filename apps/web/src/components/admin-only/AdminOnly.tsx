@@ -2,7 +2,7 @@ import { type PropsWithChildren, type ReactNode, useState, useEffect } from 'rea
 import { Form, Input, Button, Spin, Modal, message } from 'antd';
 
 import type { AddressHash } from '../../types';
-import { useIdentityContext } from '../../components/identity';
+import { useIdentityContext } from '../identity';
 import style from './style.module.scss';
 
 type AdminOnlyProps = PropsWithChildren<{
