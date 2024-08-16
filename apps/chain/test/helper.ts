@@ -3,6 +3,11 @@ import { expect } from 'chai';
 
 export const ZERO_ADDRESS = '0x0000000000000000000000000000000000000000';
 export const NFT_FAKE_BASE_URI = 'https://nft.fa.ke/';
+export const NATIVE_TOKEN = 'ETH';
+export const STABLECOIN_MAP = {
+  USDT: '0xdAC17F958D2ee523a2206206994597C13D831ec7',
+  USDC: '0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48',
+};
 
 const defaultConsoleShown = false;
 

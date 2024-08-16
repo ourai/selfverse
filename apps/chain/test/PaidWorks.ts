@@ -2,7 +2,7 @@ import { loadFixture } from '@nomicfoundation/hardhat-toolbox/network-helpers';
 import { ethers } from 'hardhat';
 import { expect } from 'chai';
 
-import { ZERO_ADDRESS, catchFunc, createOwnerChecker, createAdminChecker, createOperatorChecker } from './helper';
+import { NATIVE_TOKEN, ZERO_ADDRESS, catchFunc, createOwnerChecker, createAdminChecker, createOperatorChecker } from './helper';
 
 describe('PaidWorks', () => {
   async function deployPaidWorksFixture() {
@@ -13,8 +13,11 @@ describe('PaidWorks', () => {
     // console.log('`o1`\' address:', o1.address);
     // console.log('`o2`\' address:', o2.address);
 
+    const TokenFunds = await ethers.getContractFactory('TokenFunds');
+    const funds = await TokenFunds.deploy(NATIVE_TOKEN);
+
     const PaidWorks = await ethers.getContractFactory('PaidWorks');
-    const works = await PaidWorks.deploy();
+    const works = await PaidWorks.deploy(funds);
 
     return { owner, admin, o1, o2, others, works };
   }
@@ -66,11 +69,11 @@ describe('PaidWorks', () => {
       operator = works.connect(b1);
       await catchFunc(async () => {
         const paidWorks = allWorks.filter(({ price }) => price !== freeWorkPrice);
-        await operator.buy(paidWorks[0].id);
+        await operator['buy(uint256)'](paidWorks[0].id);
       });
-      await operator.buy(allWorks[1].id, { value: secondWorkPrice });
+      await operator['buy(uint256)'](allWorks[1].id, { value: secondWorkPrice });
       operator = works.connect(b2);
-      await operator.buy(allWorks[0].id, { value: firstWorkPrice });
+      await operator['buy(uint256)'](allWorks[0].id, { value: firstWorkPrice });
 
       // Unlist the free works
       operator = works.connect(admin);

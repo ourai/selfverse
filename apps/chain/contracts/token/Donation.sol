@@ -66,13 +66,17 @@ contract Donation is FundsSponsor, SoulboundToken, IDonation {
     _updateDonator(donator, amount);
   }
 
-  function donate(uint256 amount) external whenNotPaused nonReentrant {
+  function _donateForPerson(uint256 amount) private {
     donateFor(_msgSender(), amount, "person", 0);
+  }
+
+  function donate(uint256 amount) external whenNotPaused nonReentrant {
+    _donateForPerson(amount);
     _deposit(amount, false);
   }
 
   function donate() external payable whenNotPaused nonReentrant {
-    donateFor(_msgSender(), msg.value, "person", 0);
+    _donateForPerson(msg.value);
     _deposit(msg.value, true);
   }
 
