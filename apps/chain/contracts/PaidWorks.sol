@@ -3,9 +3,10 @@
 pragma solidity ^0.8.24;
 
 import { SelfGod } from "./access/SelfGod.sol";
+import { FundsSponsor } from "./FundsSponsor.sol";
 import { IAchievementToken } from "./token/IAchievementToken.sol";
 
-contract PaidWorks is SelfGod {
+contract PaidWorks is SelfGod, FundsSponsor {
   struct Works {
     uint256 id;
     uint256 price;
@@ -66,6 +67,8 @@ contract PaidWorks is SelfGod {
   mapping(uint256 => mapping(address => bool)) private _buyers;
   mapping(address buyer => BoughtRecord[]) private _boughtWorks;
 
+  constructor(address tokenFunds) FundsSponsor(tokenFunds) {}
+
   function _checkExists(uint256 id) private view {
     require(_publishedWorks[id].createdAt != 0, "Specific works does't exist.");
   }
@@ -125,13 +128,13 @@ contract PaidWorks is SelfGod {
     _publishedWorks[id].listing = false;
   }
 
-  function buy(uint256 id) external payable whenNotPaused {
+  function _buy(uint256 id, uint256 amount) private fundsExists {
     _checkExists(id);
 
     Works memory targetWorks = _publishedWorks[id];
 
     require(targetWorks.listing, "Not listing.");
-    require(msg.value == targetWorks.price, "Insufficient payment.");
+    require(amount == targetWorks.price, "Insufficient payment.");
 
     address buyer = _msgSender();
 
@@ -145,6 +148,16 @@ contract PaidWorks is SelfGod {
       IAchievementToken badge = IAchievementToken(targetWorks.badgeContract);
       badge.mint(buyer);
     }
+  }
+
+  function buy(uint256 id, uint256 amount) external whenNotPaused {
+    _buy(id, amount);
+    _deposit(amount, false);
+  }
+
+  function buy(uint256 id) external payable whenNotPaused {
+    _buy(id, msg.value);
+    _deposit(msg.value, true);
   }
 
   function _getWorkWithMetadata(uint256 id, address operator) private view returns (WorksWithMetadata memory) {

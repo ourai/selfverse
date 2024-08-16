@@ -8,7 +8,7 @@ import { IERC20 } from "@openzeppelin/contracts/token/ERC20/IERC20.sol";
 import { ITokenFunds } from "./ITokenFunds.sol";
 import { SelfGod } from "./access/SelfGod.sol";
 
-contract TokenFunds is ITokenFunds, SelfGod {
+contract TokenFunds is SelfGod, ITokenFunds {
   uint256 private _fundBalance;
   uint256 private _totalReceived;
 
@@ -17,26 +17,30 @@ contract TokenFunds is ITokenFunds, SelfGod {
   string[] private _tokenSymbols;
   mapping(string symbol => address) private _tokenContractMap;
 
-  constructor(string memory nativeToken, string memory paymentToken) {
+  constructor(string memory nativeToken) {
     _nativeToken = nativeToken;
-    _setPaymentToken(paymentToken);
+    _setPaymentToken(nativeToken);
   }
 
-  function _isNativeToken(string memory tokenSymbol) private view returns (bool) {
+  function isNativeToken(string memory tokenSymbol) public view returns (bool) {
     return Strings.equal(tokenSymbol, _nativeToken);
   }
 
-  function _isTokenValid(string memory tokenSymbol) private view returns (bool) {
-    return _isNativeToken(tokenSymbol) || _tokenContractMap[tokenSymbol] != address(0);
+  function isTokenValid(string memory tokenSymbol) public view returns (bool) {
+    return isNativeToken(tokenSymbol) || _tokenContractMap[tokenSymbol] != address(0);
   }
 
   function _setPaymentToken(string memory tokenSymbol) private {
-    require(_isTokenValid(tokenSymbol), "Specific token isn't supported.");
+    require(isTokenValid(tokenSymbol), "Specific token isn't supported.");
     _paymentToken = tokenSymbol;
   }
 
   function getPaymentToken() public view returns (string memory) {
     return _paymentToken;
+  }
+
+  function getPaymentTokenContract() public view returns (address) {
+    return _tokenContractMap[getPaymentToken()];
   }
 
   function updatePaymentToken(string calldata newTokenSymbol) external onlyOwner {
@@ -57,16 +61,16 @@ contract TokenFunds is ITokenFunds, SelfGod {
   }
 
   function _withdrawStablecoinToken(address receiver, uint256 amount) private {
-    bool success = IERC20(_tokenContractMap[getPaymentToken()]).transfer(receiver, amount);
+    bool success = IERC20(getPaymentTokenContract()).transfer(receiver, amount);
     require(success, "Withdraw failed.");
   }
 
   function withdraw(address receiver, uint256 amount) external onlyAdmin nonReentrant {
     string memory tokenSymbol = getPaymentToken();
 
-    require(_isTokenValid(tokenSymbol), "The payment token isn't valid.");
+    require(isTokenValid(tokenSymbol), "The payment token isn't valid.");
 
-    if (_isNativeToken(tokenSymbol)) {
+    if (isNativeToken(tokenSymbol)) {
       _withdrawNativeToken(payable(receiver), amount);
     } else {
       _withdrawStablecoinToken(receiver, amount);
@@ -75,25 +79,7 @@ contract TokenFunds is ITokenFunds, SelfGod {
     _fundBalance -= amount;
   }
 
-  function deposit(uint256 amount) external whenNotPaused nonReentrant {
-    string memory tokenSymbol = getPaymentToken();
-
-    require(_isTokenValid(tokenSymbol) && !_isNativeToken(tokenSymbol), "Payment token isn't valid token.");
-    require(amount > 0, "Amount must be greater than 0.");
-
-    bool success = IERC20(_tokenContractMap[tokenSymbol]).transferFrom(_msgSender(), address(this), amount);
-    require(success, "Deposit failed.");
-
-    _fundBalance += amount;
-    _totalReceived += amount;
-  }
-
-  function deposit() external payable whenNotPaused nonReentrant {
-    uint256 amount = msg.value;
-
-    require(_isNativeToken(getPaymentToken()), "Payment token isn't native token.");
-    require(amount > 0, "Amount must be greater than 0.");
-
+  function increaseReceived(uint256 amount) external {
     _fundBalance += amount;
     _totalReceived += amount;
   }

@@ -2,9 +2,10 @@
 
 pragma solidity ^0.8.24;
 
+import { FundsSponsor } from "../FundsSponsor.sol";
 import { SoulboundToken } from "./SoulboundToken.sol";
 
-contract Donation is SoulboundToken {
+contract Donation is FundsSponsor, SoulboundToken {
   uint256 private constant _mintableAmount = 1 * 10 ** 18;  // 1 ETH
   uint256 private _totalReceived;
 
@@ -25,7 +26,8 @@ contract Donation is SoulboundToken {
 
   mapping(address => Donator) private _donators;
 
-  constructor(string memory tokenBaseURI)
+  constructor(address tokenFunds, string memory tokenBaseURI)
+    FundsSponsor(tokenFunds)
     SoulboundToken("Selfverse Donator", "SV-DNTR", tokenBaseURI)
   {}
 
@@ -54,10 +56,8 @@ contract Donation is SoulboundToken {
     }
   }
 
-  function donate() external payable whenNotPaused nonReentrant {
-    uint256 amount = msg.value;
-
-    require(amount > 0, "The donation amount must be greater than 0 ETH.");
+  function _donate(uint256 amount) private fundsExists {
+    require(amount > 0, "The donation amount must be greater than 0.");
 
     _totalReceived += amount;
 
@@ -65,6 +65,16 @@ contract Donation is SoulboundToken {
 
     _allDonations.push(Record(donator, amount, block.timestamp));
     _updateDonator(donator, amount);
+  }
+
+  function donate(uint256 amount) external whenNotPaused nonReentrant {
+    _donate(amount);
+    _deposit(amount, false);
+  }
+
+  function donate() external payable whenNotPaused nonReentrant {
+    _donate(msg.value);
+    _deposit(msg.value, true);
   }
 
   function getReceived() external view returns (uint256) {
