@@ -4,8 +4,9 @@ pragma solidity ^0.8.24;
 
 import { FundsSponsor } from "../FundsSponsor.sol";
 import { SoulboundToken } from "./SoulboundToken.sol";
+import { IDonation } from "./IDonation.sol";
 
-contract Donation is FundsSponsor, SoulboundToken {
+contract Donation is FundsSponsor, SoulboundToken, IDonation {
   uint256 private constant _mintableAmount = 1 * 10 ** 18;  // 1 ETH
   uint256 private _totalReceived;
 
@@ -56,24 +57,22 @@ contract Donation is FundsSponsor, SoulboundToken {
     }
   }
 
-  function _donate(uint256 amount) private fundsExists {
+  function donateFor(address donator, uint256 amount, string memory /* subject */, uint256 /* subjectId */) public fundsExists {
     require(amount > 0, "The donation amount must be greater than 0.");
 
     _totalReceived += amount;
-
-    address donator = _msgSender();
 
     _allDonations.push(Record(donator, amount, block.timestamp));
     _updateDonator(donator, amount);
   }
 
   function donate(uint256 amount) external whenNotPaused nonReentrant {
-    _donate(amount);
+    donateFor(_msgSender(), amount, "person", 0);
     _deposit(amount, false);
   }
 
   function donate() external payable whenNotPaused nonReentrant {
-    _donate(msg.value);
+    donateFor(_msgSender(), msg.value, "person", 0);
     _deposit(msg.value, true);
   }
 
