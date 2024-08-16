@@ -4,9 +4,11 @@ pragma solidity ^0.8.24;
 
 import { Strings } from "@openzeppelin/contracts/utils/Strings.sol";
 import { IERC20 } from "@openzeppelin/contracts/token/ERC20/IERC20.sol";
+
+import { ITokenFunds } from "./ITokenFunds.sol";
 import { SelfGod } from "./access/SelfGod.sol";
 
-contract TokenFunds is SelfGod {
+contract TokenFunds is ITokenFunds, SelfGod {
   uint256 private _fundBalance;
   uint256 private _totalReceived;
 
@@ -37,11 +39,11 @@ contract TokenFunds is SelfGod {
     return _paymentToken;
   }
 
-  function updatePaymentToken(string calldata newTokenSymbol) external {
+  function updatePaymentToken(string calldata newTokenSymbol) external onlyOwner {
     _setPaymentToken(newTokenSymbol);
   }
 
-  function addToken(string calldata symbol, address contractAddr) external {
+  function addToken(string calldata symbol, address contractAddr) external onlyOwner {
     if (_tokenContractMap[symbol] == address(0)) {
       _tokenSymbols.push(symbol);
     }
