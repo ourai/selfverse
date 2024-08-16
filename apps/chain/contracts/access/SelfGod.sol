@@ -66,11 +66,6 @@ abstract contract SelfGod is Ownable(msg.sender), AccessControlEnumerable, Pausa
     _regrantSelfverseRole(SV_OPERATOR, newOperators, needClearPrevOperators);
   }
 
-  function withdraw(address payable receiver, uint256 amount) external onlyAdmin nonReentrant {
-    (bool success, ) = receiver.call{value: amount}("");
-    require(success, "Withdraw failed.");
-  }
-
   function pause() external onlyAdmin {
     _pause();
   }

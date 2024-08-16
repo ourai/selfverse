@@ -7,7 +7,6 @@ import { IAccessControlEnumerable } from "@openzeppelin/contracts/access/extensi
 interface ISelfGod is IAccessControlEnumerable {
   function updateAdmin(address newAdmin) external;
   function updateOperators(address[] calldata newOperators, bool needClearPrevOperators) external;
-  function withdraw(address payable receiver, uint256 amount) external;
   function pause() external;
   function unpause() external;
 }
