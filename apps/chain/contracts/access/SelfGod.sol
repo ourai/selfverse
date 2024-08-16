@@ -13,7 +13,7 @@ import { ISelfGod } from "./ISelfGod.sol";
 abstract contract SelfGod is Ownable(msg.sender), AccessControlEnumerable, Pausable, ReentrancyGuard, ISelfGod {
   bytes32 public constant SV_OWNER = keccak256("SV_OWNER");
   bytes32 public constant SV_ADMIN = keccak256("SV_ADMIN");
-  bytes32 public constant SV_OPERATOR = keccak256("SV_OPERATOR");
+  bytes32 public constant SV_OPERATOR = keccak256("SV_OPERATOR"); // An operator is a smart contract
 
   constructor() {
     _setRoleAdmin(SV_ADMIN, SV_OWNER);
