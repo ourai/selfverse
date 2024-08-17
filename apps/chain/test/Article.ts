@@ -83,8 +83,10 @@ describe('Article', () => {
       expect((await operator.getList()).length).to.equal(0);
       expect((await operator.getOne(2n)).published).to.equal(false);
     });
+  });
 
-    it('Donate', async () => {
+  describe('Donate', () => {
+    it('Donate with native token', async () => {
       const { owner, admin, o1, o2, article, donation, funds } = await loadFixture(deployArticleFixture);
 
       let operator = article.connect(owner);

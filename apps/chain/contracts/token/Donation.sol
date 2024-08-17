@@ -13,6 +13,8 @@ contract Donation is FundsSponsor, SoulboundToken, IDonation {
   struct Record {
     address donator;
     uint256 amount;
+    string subject;
+    uint256 subjectId;
     uint256 donatedAt;
   }
 
@@ -57,12 +59,12 @@ contract Donation is FundsSponsor, SoulboundToken, IDonation {
     }
   }
 
-  function donateFor(address donator, uint256 amount, string memory /* subject */, uint256 /* subjectId */) public fundsExists {
+  function donateFor(address donator, uint256 amount, string memory subject, uint256 subjectId) public fundsExists {
     require(amount > 0, "The donation amount must be greater than 0.");
 
     _totalReceived += amount;
 
-    _allDonations.push(Record(donator, amount, block.timestamp));
+    _allDonations.push(Record(donator, amount, subject, subjectId, block.timestamp));
     _updateDonator(donator, amount);
   }
 
