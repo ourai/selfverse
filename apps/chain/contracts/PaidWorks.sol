@@ -59,6 +59,13 @@ contract PaidWorks is SelfGod, FundsSponsor {
     uint256 boughtAt;
   }
 
+  struct Chapter {
+    string title;
+    string description;
+    string subject;
+    uint256 subjectId;
+  }
+
   uint256[] private _worksIds;
 
   mapping(uint256 => Works) private _publishedWorks;
@@ -66,6 +73,7 @@ contract PaidWorks is SelfGod, FundsSponsor {
   mapping(uint256 => SoldRecord) private _soldRecords;
   mapping(uint256 => mapping(address => bool)) private _buyers;
   mapping(address buyer => BoughtRecord[]) private _boughtWorks;
+  mapping(uint256 id => Chapter[]) private _chapterMap;
 
   constructor(address tokenFunds) FundsSponsor(tokenFunds) {}
 
@@ -110,6 +118,23 @@ contract PaidWorks is SelfGod, FundsSponsor {
   function updateBadge(uint256 id, address badgeContract) external onlyAdmin {
     _checkExists(id);
     _publishedWorks[id].badgeContract = badgeContract;
+  }
+
+  function updateChapters(uint256 id, Chapter[] memory chapters) external onlyAdmin {
+    _checkExists(id);
+    delete _chapterMap[id];
+
+    Chapter memory chapter;
+
+    for (uint256 i; i < chapters.length; i++) {
+      chapter = chapters[i];
+      _chapterMap[id].push(Chapter(chapter.title, chapter.description, chapter.subject, chapter.subjectId));
+    }
+  }
+
+  function getChapters(uint256 id) external view returns (Chapter[] memory) {
+    _checkExists(id);
+    return _chapterMap[id];
   }
 
   // function remove(uint256 id) external onlyAdmin {

@@ -3,14 +3,19 @@ import { useParams } from 'react-router-dom';
 import { Flex, Button, Avatar, Tabs, type TabsProps, Popconfirm, List, message } from 'antd';
 import { useAccount } from '@ant-design/web3';
 import Jazzicon, { jsNumberForAddress } from 'react-jazzicon';
+import markdownIt from 'markdown-it';
 
-import type { WorkListItem, Buyer } from '../../types';
+import type { ArticleListItem, WorkListItem, Buyer, WorkChapter } from '../../types';
 import { resolvePrice } from '../../utils';
-import { fetchOne, fetchBuyerList, buyOne } from '../../services/works';
+import { fetchList as fetchArticleList } from '../../services/article';
+import { fetchOne, fetchChapters, fetchBuyerList, buyOne } from '../../services/works';
 import { useIdentityContext } from '../../components/identity';
 
+import ChapterCard from './ChapterCard';
 import BuyerCard from './BuyerCard';
 import style from './style.module.scss';
+
+const md = markdownIt({ html: true });
 
 function WorksItem() {
   const identity = useIdentityContext();
@@ -20,6 +25,7 @@ function WorksItem() {
   const [messageApi, contextHolder] = message.useMessage();
   const [buyers, setBuyers] = useState<Buyer[]>([]);
   const { account } = useAccount();
+  const [chapters, setChapters] = useState<WorkChapter[]>([]);
 
   useEffect(() => {
     if (fetched) {
@@ -28,10 +34,32 @@ function WorksItem() {
 
     const workId = BigInt(id!);
 
-    Promise.all([fetchOne(workId, account && account.address), fetchBuyerList(workId)])
+    Promise.all([
+      fetchOne(workId, account && account.address),
+      fetchBuyerList(workId),
+      fetchChapters(workId),
+      fetchArticleList(),
+    ])
       .then(results => {
+        const articleMap = results[3].reduce((p, c) => ({ ...p, [c.id]: c }), {} as any);
+        const resolved: WorkChapter[] = [];
+
+        results[2].forEach(id => {
+          const article = articleMap[Number(id)] as ArticleListItem | undefined;
+
+          if (article) {
+            resolved.push({
+              title: article.title,
+              description: article.description,
+              subject: 'article',
+              subjectId: BigInt(article.id),
+            });
+          }
+        });
+
         setRecord(results[0]);
         setBuyers(results[1]);
+        setChapters(resolved);
         setFetched(true);
       })
       .catch(err => {
@@ -62,12 +90,22 @@ function WorksItem() {
       {
         key: 'intro',
         label: 'Introduction',
-        children: record.content,
+        children: <div dangerouslySetInnerHTML={{ __html: md.render(record.content) }} />,
       },
       {
         key: 'content',
         label: 'Contents',
-        children: '暂无',
+        children: (
+          <List
+            dataSource={chapters}
+            grid={{ gutter: 16, column: 3 }}
+            renderItem={(item, index) => (
+              <List.Item>
+                <ChapterCard serialNumber={index + 1} dataSource={item} />
+              </List.Item>
+            )}
+          />
+        ),
       },
       {
         key: 'buyer',

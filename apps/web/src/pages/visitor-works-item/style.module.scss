@@ -1,3 +1,4 @@
+.ChapterCard,
 .BuyerCard {
   &-header {
     font-size: 16px;
@@ -5,6 +6,27 @@
 
   &-footer {
     margin-top: 8px;
+  }
+}
+
+.ChapterCard {
+  &-sn {
+    flex-shrink: 0;
+    width: 60px;
+    padding-right: 18px;
+    font-size: 36px;
+    font-style: italic;
+    line-height: 1;
+    text-align: right;
+    color: #a6a6a6;
+  }
+
+  &-main {
+    flex-grow: 1;
+  }
+
+  &-footer {
+    color: #888;
   }
 }
 

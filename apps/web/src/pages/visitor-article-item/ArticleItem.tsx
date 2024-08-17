@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { useParams } from 'react-router-dom';
-import { Button, Modal, Form, InputNumber, message } from 'antd';
+import { Divider, Button, Modal, Form, InputNumber, message } from 'antd';
 import { CoffeeOutlined } from '@ant-design/icons';
 import { EthereumColorful } from '@ant-design/web3-icons';
 import { parseEther } from 'viem';
@@ -84,19 +84,19 @@ function ArticleItem() {
               <p>Posted {resolveRelativeTime(record.publishedAt)}</p>
             </div>
           </header>
-          <article
-            className={style['ArticleItem-body']}
-            dangerouslySetInnerHTML={{ __html: md.render(record.content) }}
-          />
-          <div className={style['ArticleItem-footer']}>
-            <Button
-              className={style['ArticleItem-donation']}
-              size="large"
-              shape="circle"
-              icon={<CoffeeOutlined />}
-              onClick={() => setDialogVisible(true)}
-            />
-          </div>
+          <article className={style['ArticleItem-body']}>
+            <div dangerouslySetInnerHTML={{ __html: md.render(record.content) }} />
+            <Divider />
+            <div className={style['ArticleItem-donation']}>
+              <Button
+                className={style['ArticleItem-donationTrigger']}
+                size="large"
+                shape="circle"
+                icon={<CoffeeOutlined />}
+                onClick={() => setDialogVisible(true)}
+              />
+            </div>
+          </article>
           <Modal
             title="Donate a cup of coffee"
             open={dialogVisible}

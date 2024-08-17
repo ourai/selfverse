@@ -13,7 +13,7 @@
   &-header {
     position: relative;
     height: 300px;
-    background: none transparent 50% 50% no-repeat;
+    background: none #ccc 50% 50% no-repeat;
     background-size: cover;
     color: #fff;
   }
@@ -35,12 +35,12 @@
     font-size: 16px;
   }
 
-  &-footer {
+  &-donation {
     margin-top: $hp;
     text-align: center;
   }
 
-  &-donation {
+  &-donationTrigger {
     width: 80px !important;
     height: 80px;
 

@@ -28,6 +28,18 @@ type WorkListItem = Required<WorkFormValue> & {
   bought: boolean;
 };
 
+type WorkChapter = {
+  title: string;
+  description: string;
+  subject: string;
+  subjectId: bigint;
+}
+
+type ChapterFormValue = {
+  id: number;
+  chapters: (number | bigint)[];
+};
+
 type BoughtWork = Pick<WorkListItem, 'id' | 'title' | 'cover' | 'description'> & {
   boughtAt: bigint;
 }
@@ -50,7 +62,7 @@ type Buyer = {
 export type {
   AddressHash,
   ArticleFormValue, ArticleListItem,
-  WorkFormValue, WorkListItem, BoughtWork,
+  WorkFormValue, WorkListItem, WorkChapter, ChapterFormValue, BoughtWork,
   DonationRecord, Donator,
   Buyer,
 }

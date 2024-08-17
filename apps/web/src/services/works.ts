@@ -1,6 +1,6 @@
 import { parseEther } from 'viem';
 
-import type { AddressHash, WorkFormValue, WorkListItem, BoughtWork, Buyer } from '../types';
+import type { AddressHash, WorkFormValue, WorkListItem, WorkChapter, BoughtWork, Buyer } from '../types';
 import { readContract, writeContract } from '../utils/contract';
 import { updateContractAdmin } from './common';
 
@@ -47,9 +47,25 @@ async function fetchBoughtList(buyer: AddressHash) {
   return readContract(contractName, 'getBoughtWorks', [buyer]) as Promise<BoughtWork[]>;
 }
 
+async function fetchChapters(id: WorkId) {
+  const chapters = (await readContract(contractName, 'getChapters', [id])) as WorkChapter[];
+
+  return chapters.map(({ subjectId }) => subjectId);
+}
+
+async function updateChapters(id: WorkId, chapters: (number | bigint)[]) {
+  return writeContract(contractName, 'updateChapters', [id, chapters.map(si => ({
+    title: '',
+    description: '',
+    subject: 'article',
+    subjectId: si,
+  }))]);
+}
+
 export {
   updateAdmin,
   fetchList, fetchOne, fetchBuyerList,
   insertOne, listForSales, buyOne,
   fetchBoughtList,
+  fetchChapters, updateChapters,
 };

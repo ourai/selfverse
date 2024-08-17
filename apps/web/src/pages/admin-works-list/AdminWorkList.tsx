@@ -2,11 +2,12 @@ import { useState, useEffect } from 'react';
 import { type TableProps, Table, Image, Space, Button, Modal, Form, Popconfirm, message } from 'antd';
 import { isAddress, formatEther } from 'viem';
 
-import type { WorkFormValue, WorkListItem } from '../../types';
-import { updateAdmin, fetchList, insertOne, listForSales } from '../../services/works';
+import type { WorkFormValue, WorkListItem, ChapterFormValue } from '../../types';
+import { updateAdmin, fetchList, insertOne, listForSales, fetchChapters, updateChapters } from '../../services/works';
 import AdminOnly from '../../components/admin-only';
 
 import AdminWorkForm from './AdminWorkForm';
+import ChapterListForm from './ChapterListForm';
 import style from './style.module.scss';
 
 function getDefaultWorkFormValue(): WorkFormValue {
@@ -26,6 +27,11 @@ function AdminWorksList() {
   const [messageApi, contextHolder] = message.useMessage();
   const [updating, setUpdating] = useState(false);
   const [renderedAt, setRenderedAt] = useState(Date.now());
+  const [chapterDialogVisible, setChapterDialogVisible] = useState(false);
+  const [chapterUpdating, setChapterUpdating] = useState(false);
+  const [chapterForm] = Form.useForm<ChapterFormValue>();
+  const [chosenWithChapters, setChosenWithChapters] = useState<ChapterFormValue>();
+  const [chapters, setChapters] = useState<(number | bigint)[]>([]);
 
   useEffect(() => {
     fetchList()
@@ -60,6 +66,24 @@ function AdminWorksList() {
     }
   }, [chosenWork, updating]);
 
+  useEffect(() => {
+    if (!chapterUpdating) {
+      return;
+    }
+
+    updateChapters(chosenWithChapters!.id, chosenWithChapters!.chapters)
+      .then(() => {
+        messageApi.success(`Chapters have been successfully updated.`);
+        closeChapterDialog();
+        setRenderedAt(Date.now());
+      })
+      .catch(err => {
+        messageApi.error(`Error occurred during updating chapters.`);
+        console.log('[ERROR]', err);
+      })
+      .finally(() => setChapterUpdating(false));
+  }, [chosenWithChapters, chapterUpdating]);
+
   const openDialog = (work: WorkFormValue) => {
     form.setFieldsValue(work);
     setDialogVisible(true);
@@ -81,6 +105,40 @@ function AdminWorksList() {
 
     setChosenWork(values);
     setUpdating(true);
+  }
+
+  const openChapterDialog = async (work: WorkFormValue) => {
+    const id = work.id!;
+    const chapters = (await fetchChapters(id)) as (number | bigint)[];
+
+    chapterForm.setFieldsValue({ id, chapters });
+    setChapterDialogVisible(true);
+  };
+
+  const closeChapterDialog = () => {
+    chapterForm.resetFields();
+    setChapterDialogVisible(false);
+
+    if (chapterUpdating) {
+      setChapterUpdating(false);
+    }
+  };
+
+  const handleChapterSubmit = (values: ChapterFormValue) => {
+    const resolved: (number | bigint)[] = [];
+
+    values.chapters.forEach(c => {
+      if (c && !resolved.some(v => v === c)) {
+        resolved.push(c);
+      }
+    });
+
+    if (resolved.length < 2) {
+      return messageApi.error('Count of chapters must be greater than 1.');
+    }
+
+    setChosenWithChapters({ id: values.id, chapters: resolved });
+    setChapterUpdating(true);
   }
 
   const handleSell = (work: WorkListItem) => {
@@ -140,7 +198,7 @@ function AdminWorksList() {
     {
       title: 'Operation',
       key: 'operation',
-      width: 220,
+      width: 300,
       fixed: 'right',
       render: (_, item) => {
         let hintTitle;
@@ -169,6 +227,7 @@ function AdminWorksList() {
               <Button size="small">{btnText}</Button>
             </Popconfirm>
             <Button size="small" onClick={openDialog.bind(null, item)}>Edit</Button>
+            <Button size="small" onClick={openChapterDialog.bind(null, item)}>Chapter</Button>
             <Button size="small" danger onClick={() => messageApi.error('Not supported operation. Couldn\'t be removed for now.')}>Remove</Button>
           </Space>
         )
@@ -201,6 +260,18 @@ function AdminWorksList() {
         onCancel={closeDialog}
       >
         <AdminWorkForm form={form} onSubmit={handleSubmit} />
+      </Modal>
+      <Modal
+        title="Update chapters"
+        open={chapterDialogVisible}
+        confirmLoading={chapterUpdating}
+        closable={!chapterUpdating}
+        maskClosable={false}
+        keyboard={false}
+        onOk={() => chapterForm.submit()}
+        onCancel={closeChapterDialog}
+      >
+        <ChapterListForm form={chapterForm} onSubmit={handleChapterSubmit} />
       </Modal>
     </AdminOnly>
   );
