@@ -29,6 +29,10 @@ contract Article is SelfGod, FundsSponsor {
     _donation = IDonation(donation);
   }
 
+  function totalCount() public view returns (uint256) {
+    return _postIds.length;
+  }
+
   function add(
     string calldata title,
     string calldata description,
@@ -38,6 +42,7 @@ contract Article is SelfGod, FundsSponsor {
     uint256 id = _postIds.length + 1;
     uint256 timestamp = block.timestamp;
     _postMap[id] = Post(id, title, description, content, banner, timestamp, timestamp, timestamp, false);
+    _postIds.push(id);
   }
 
   function _checkExists(uint256 id) private view {
@@ -72,15 +77,68 @@ contract Article is SelfGod, FundsSponsor {
     _postMap[id].published = false;
   }
 
+  function getOne(uint256 id) public view returns (Post memory) {
+    _checkExists(id);
+    return _postMap[id];
+  }
+
+  function getAll() external view returns (Post[] memory) {
+    uint256 total = totalCount();
+    Post[] memory posts = new Post[](total);
+
+    for (uint256 i; i < total; i++) {
+      posts[i] = _postMap[_postIds[i]];
+    }
+
+    return posts;
+  }
+
+  function _getPublishedCount() private view returns (uint256) {
+    uint256 count;
+
+    for (uint256 i; i < _postIds.length; i++) {
+      if (_postMap[_postIds[i]].published) {
+        count += 1;
+      }
+    }
+
+    return count;
+  }
+
+  function getList() external view returns (Post[] memory) {
+    uint256 total = totalCount();
+    Post[] memory posts = new Post[](_getPublishedCount());
+
+    uint256 index;
+    Post memory post;
+
+    for (uint256 i; i < total; i++) {
+      post = _postMap[_postIds[i]];
+
+      if (post.published) {
+        posts[index] = post;
+        index += 1;
+      }
+    }
+
+    return posts;
+  }
+
+  function _donateForArticle(uint256 id, uint256 amount) private {
+    _donation.donateFor(_msgSender(), amount, "article", id);
+  }
+
   function donate(uint256 id, uint256 amount) external whenNotPaused nonReentrant {
     _checkExists(id);
-    _donation.donateFor(_msgSender(), amount, "article", id);
+    require(getOne(id).published, "Can't donate.");
+    _donateForArticle(id, amount);
     _deposit(amount, false);
   }
 
   function donate(uint256 id) external payable whenNotPaused nonReentrant {
     _checkExists(id);
-    _donation.donateFor(_msgSender(), msg.value, "article", id);
+    require(getOne(id).published, "Can't donate.");
+    _donateForArticle(id, msg.value);
     _deposit(msg.value, true);
   }
 }

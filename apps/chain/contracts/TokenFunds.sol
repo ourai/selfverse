@@ -79,6 +79,11 @@ contract TokenFunds is SelfGod, ITokenFunds {
     _fundBalance -= amount;
   }
 
+  function deposit() external payable returns (bool) {
+    require(isNativeToken(getPaymentToken()), "Payment token isn't native token.");
+    return true;
+  }
+
   function increaseReceived(uint256 amount) external {
     _fundBalance += amount;
     _totalReceived += amount;

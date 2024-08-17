@@ -18,7 +18,9 @@ abstract contract FundsSponsor {
   }
 
   function _deposit(uint256 amount, bool nativeTokenUsed) internal {
-    require(amount > 0, "Deposit amount must be greater than 0.");
+    if (amount == 0) {
+      return;
+    }
 
     ITokenFunds funds = ITokenFunds(_tokenFunds);
     string memory tokenSymbol = funds.getPaymentToken();
@@ -26,8 +28,9 @@ abstract contract FundsSponsor {
 
     if (nativeTokenUsed) {
       require(funds.isNativeToken(tokenSymbol), "Payment token isn't native token.");
-      (bool success, ) = payable(_tokenFunds).call{value: amount}("");
-      depositSuccess = success;
+      // (bool success, ) = payable(_tokenFunds).call{value: amount}("");
+      // depositSuccess = success;
+      depositSuccess = funds.deposit{value: amount}();
     } else {
       require(funds.isTokenValid(tokenSymbol) && !funds.isNativeToken(tokenSymbol), "Payment token isn't valid token.");
       depositSuccess = IERC20(funds.getPaymentTokenContract()).transferFrom(address(this), _tokenFunds, amount);

@@ -15,4 +15,5 @@ interface ITokenFunds {
   function increaseReceived(uint256 amount) external;
   function getBalance() external view returns (uint256);
   function getReceived() external view returns (uint256);
+  function deposit() external payable returns (bool);
 }
