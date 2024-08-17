@@ -17,7 +17,7 @@ async function fetchAll() {
 }
 
 async function fetchOne(id: ArticleId) {
-  return readContract(contractName, 'getOne', [id]) as Promise<ArticleFormValue>;
+  return readContract(contractName, 'getOne', [id]) as Promise<ArticleListItem>;
 }
 
 async function insertOne(value: ArticleFormValue) {
@@ -33,4 +33,12 @@ async function publish(id: ArticleId, published?: boolean) {
   return writeContract(contractName, published !== false ? 'publish' : 'unpublish', [id]);
 }
 
-export { updateAdmin, fetchList, fetchAll, fetchOne, insertOne, publish };
+async function donate(id: ArticleId, value: bigint) {
+  return writeContract(contractName, 'donate', [id], value);
+}
+
+export {
+  updateAdmin,
+  fetchList, fetchAll, fetchOne,
+  insertOne, publish, donate,
+};

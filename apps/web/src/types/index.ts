@@ -9,7 +9,9 @@ type ArticleFormValue = {
   published: boolean;
 }
 
-type ArticleListItem = Required<ArticleFormValue>;
+type ArticleListItem = Required<ArticleFormValue> & {
+  publishedAt: bigint;
+};
 
 type WorkFormValue = {
   id?: number;
