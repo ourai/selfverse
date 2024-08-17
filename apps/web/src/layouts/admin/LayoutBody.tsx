@@ -1,6 +1,7 @@
 import { useLocation, Link, Outlet } from 'react-router-dom';
 import { Layout, Menu, type MenuProps } from 'antd';
-import { BookOutlined, HeartOutlined } from '@ant-design/icons';
+import { FileTextOutlined, BookOutlined, HeartOutlined } from '@ant-design/icons';
+import { USDTFilled } from '@ant-design/web3-icons';
 
 import { useIsAdmin } from '../../hooks';
 
@@ -14,6 +15,11 @@ function LayoutBody() {
 
   const menuItems: MenuProps['items'] = [
     {
+      label: <Link to={`${pathPrefix}/articles`}>Articles</Link>,
+      key: 'articles',
+      icon: <FileTextOutlined />,
+    },
+    {
       label: <Link to={`${pathPrefix}/works`}>Works</Link>,
       key: 'works',
       icon: <BookOutlined />,
@@ -22,6 +28,11 @@ function LayoutBody() {
       label: <Link to={`${pathPrefix}/donation`}>Donation</Link>,
       key: 'donation',
       icon: <HeartOutlined />,
+    },
+    {
+      label: <Link to={`${pathPrefix}/funds`}>Funds</Link>,
+      key: 'funds',
+      icon: <USDTFilled />,
     },
   ];
   const currentMenu = menuItems.find(item => `${pathPrefix}/${item!.key}` === pathname );

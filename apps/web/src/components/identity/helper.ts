@@ -14,15 +14,23 @@ function getDefaultIdentity() {
 }
 
 function resolveContract(pathname: string) {
-  if (pathname.startsWith('/works') || pathname.startsWith('/cellar/works')) {
-    return 'paidWorks';
+  if (pathname.startsWith('/cellar/funds')) {
+    return 'funds';
   }
 
   if (pathname.startsWith('/donation') || pathname.startsWith('/cellar/donation')) {
     return 'donation';
   }
 
-  return 'paidWorks';
+  if (pathname.startsWith('/cellar/articles')) {
+    return 'article';
+  }
+
+  if (pathname.startsWith('/works') || pathname.startsWith('/cellar/works')) {
+    return 'paidWorks';
+  }
+
+  return 'article';
 }
 
 export { getDefaultIdentity, resolveContract };

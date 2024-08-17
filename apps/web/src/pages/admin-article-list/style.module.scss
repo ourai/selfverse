@@ -1,0 +1,25 @@
+.AdminArticleList {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  padding: 24px;
+
+  &-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-shrink: 0;
+    padding-bottom: 16px;
+  }
+
+  &-title {
+    font-size: 16px;
+    font-weight: bold;
+    text-transform: uppercase;
+  }
+
+  &-body {
+    flex-grow: 1;
+    overflow: auto;
+  }
+}

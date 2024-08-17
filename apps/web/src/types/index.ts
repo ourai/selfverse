@@ -1,5 +1,16 @@
 type AddressHash = `0x${string}`;
 
+type ArticleFormValue = {
+  id?: number;
+  title: string;
+  description: string;
+  content: string;
+  banner: string;
+  published: boolean;
+}
+
+type ArticleListItem = Required<ArticleFormValue>;
+
 type WorkFormValue = {
   id?: number;
   title: string;
@@ -34,4 +45,10 @@ type Buyer = {
   soldAt: bigint;
 };
 
-export type { AddressHash, WorkFormValue, WorkListItem, BoughtWork, DonationRecord, Donator, Buyer }
+export type {
+  AddressHash,
+  ArticleFormValue, ArticleListItem,
+  WorkFormValue, WorkListItem, BoughtWork,
+  DonationRecord, Donator,
+  Buyer,
+}

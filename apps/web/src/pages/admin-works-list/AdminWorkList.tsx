@@ -56,7 +56,7 @@ function AdminWorksList() {
           messageApi.error(`Error occurred during inserting ${chosenWork.title}.`);
           console.log('[ERROR]', err);
         })
-        .finally(() => setUpdating(false))
+        .finally(() => setUpdating(false));
     }
   }, [chosenWork, updating]);
 
