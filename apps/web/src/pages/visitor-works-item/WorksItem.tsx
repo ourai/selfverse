@@ -1,7 +1,6 @@
 import { useState, useEffect } from 'react';
 import { useParams } from 'react-router-dom';
 import { Flex, Button, Avatar, Tabs, type TabsProps, Popconfirm, List, message } from 'antd';
-import { UserOutlined } from '@ant-design/icons';
 import { useAccount } from '@ant-design/web3';
 import Jazzicon, { jsNumberForAddress } from 'react-jazzicon';
 

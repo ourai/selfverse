@@ -12,6 +12,10 @@ function VisitorLayout() {
   const containerStyle = { maxWidth: 1280, margin: '0 auto' };
   const menuItems: MenuProps['items'] = [
     {
+      label: <Link to="/articles">Articles</Link>,
+      key: 'articles',
+    },
+    {
       label: <Link to="/works">Works</Link>,
       key: 'works',
     },
@@ -20,19 +24,19 @@ function VisitorLayout() {
       key: 'donation',
     },
   ];
-  const currentMenu = menuItems.find(item => `/${item!.key}` === pathname );
+  const currentMenu = menuItems.find(item => pathname.startsWith(`/${item!.key}`));
 
   return (
     <Container>
       <Layout className={style.VisitorLayout}>
         <Layout.Header className={style['VisitorLayout-header']}>
           <Flex align="center" justify="space-between" style={containerStyle}>
-            <Space>
-              <div style={{ fontSize: 24 }}>
+            <div className={style['VisitorLayout-headerMain']}>
+              <div className={style['VisitorLayout-brand']}>
                 <Link to="/">Selfverse</Link>
               </div>
-              <Menu items={menuItems} selectedKeys={(currentMenu ? [currentMenu.key!] : []) as string[]} mode="horizontal" />
-            </Space>
+              <Menu className={style['VisitorLayout-navs']} items={menuItems} selectedKeys={(currentMenu ? [currentMenu.key!] : []) as string[]} mode="horizontal" />
+            </div>
             <Space>
               <Passport />
             </Space>

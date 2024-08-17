@@ -22,7 +22,7 @@ function resolveContract(pathname: string) {
     return 'donation';
   }
 
-  if (pathname.startsWith('/cellar/articles')) {
+  if (pathname.startsWith('/articles') || pathname.startsWith('/cellar/articles')) {
     return 'article';
   }
 

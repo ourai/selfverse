@@ -8,6 +8,21 @@
     box-shadow: 0 8px 24px -2px rgba(0, 0, 0, .05);
   }
 
+  &-headerMain {
+    flex-grow: 1;
+    display: flex;
+  }
+
+  &-brand {
+    flex-shrink: 0;
+    margin-right: 8px;
+    font-size: 24px;
+  }
+
+  &-navs {
+    flex-grow: 1;
+  }
+
   &-body {
     overflow: auto;
   }

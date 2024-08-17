@@ -16,6 +16,10 @@ async function fetchAll() {
   return readContract(contractName, 'getAll') as Promise<ArticleListItem[]>;
 }
 
+async function fetchOne(id: ArticleId) {
+  return readContract(contractName, 'getOne', [id]) as Promise<ArticleFormValue>;
+}
+
 async function insertOne(value: ArticleFormValue) {
   return writeContract(contractName, 'add', [
     value.title,
@@ -29,4 +33,4 @@ async function publish(id: ArticleId, published?: boolean) {
   return writeContract(contractName, published !== false ? 'publish' : 'unpublish', [id]);
 }
 
-export { updateAdmin, fetchList, fetchAll, insertOne, publish };
+export { updateAdmin, fetchList, fetchAll, fetchOne, insertOne, publish };
