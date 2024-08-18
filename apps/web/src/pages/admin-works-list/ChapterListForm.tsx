@@ -1,7 +1,8 @@
-import { type FormProps as AntdFormProps, Button, Form, InputNumber, Input } from 'antd';
+import { type FormProps as AntdFormProps, Button, Form, InputNumber, Input, Flex } from 'antd';
 import { MinusCircleOutlined, PlusOutlined } from '@ant-design/icons';
 
 import { ChapterFormValue } from '../../types';
+import style from './style.module.scss';
 
 type FormProps = Required<AntdFormProps<ChapterFormValue>>;
 
@@ -11,28 +12,15 @@ type ChapterListFormProps = {
 };
 
 const formItemLayout = {
-  labelCol: {
-    xs: { span: 24 },
-    sm: { span: 4 },
-  },
-  wrapperCol: {
-    xs: { span: 24 },
-    sm: { span: 20 },
-  },
-};
-
-const formItemLayoutWithOutLabel = {
-  wrapperCol: {
-    xs: { span: 24, offset: 0 },
-    sm: { span: 20, offset: 4 },
-  },
+  labelCol: { span: 0 },
+  wrapperCol: { span: 24 },
 };
 
 function ChapterListForm(props: ChapterListFormProps) {
   return (
     <Form
       form={props.form}
-      {...formItemLayoutWithOutLabel}
+      {...formItemLayout}
       onFinish={props.onSubmit}
     >
       <Form.List
@@ -49,34 +37,30 @@ function ChapterListForm(props: ChapterListFormProps) {
       >
         {(fields, { add, remove }, { errors }) => (
           <>
-            {fields.map((field, index) => (
+            {fields.map(field => (
               <Form.Item
-                {...(index === 0 ? formItemLayout : formItemLayoutWithOutLabel)}
-                label={index === 0 ? 'Chapters' : ''}
+                {...formItemLayout}
+                label={false}
                 required={false}
                 key={`parent-${field.key}`}
               >
-                <Form.Item
-                  name={field.name}
-                  key={field.key}
-                  fieldKey={field.fieldKey}
-                  validateTrigger={['onChange', 'onBlur']}
-                  rules={[
-                    {
-                      required: true,
-                      // whitespace: true,
-                      message: "Please input article's ID or delete this field.",
-                    },
-                  ]}
-                  noStyle
-                >
-                  <InputNumber style={{ width: '60%' }} placeholder="Article ID" min={0} precision={0} />
-                </Form.Item>
-                {fields.length > 1 ? (
-                  <MinusCircleOutlined
-                    onClick={() => remove(field.name)}
-                  />
-                ) : null}
+                <Flex align="center" justify="space-between">
+                  <div className={style['ChapterListForm-chapterField']}>
+                    <Form.Item
+                      name={field.name}
+                      key={field.key}
+                      fieldKey={field.fieldKey}
+                      validateTrigger={['onChange', 'onBlur']}
+                      rules={[{ required: true, message: "Please input article's ID or delete this field." }]}
+                      noStyle
+                    >
+                      <InputNumber placeholder="Article ID" min={0} precision={0} />
+                    </Form.Item>
+                  </div>
+                  {fields.length > 1 ? (
+                    <MinusCircleOutlined className={style['ChapterListForm-removeTrigger']} onClick={() => remove(field.name)} />
+                  ) : null}
+                </Flex>
               </Form.Item>
             ))}
             <Form.Item>

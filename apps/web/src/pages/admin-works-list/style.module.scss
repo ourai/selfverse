@@ -1,3 +1,20 @@
+.ChapterListForm {
+  &-chapterField {
+    flex-grow: 1;
+
+    :global(.ant-input-number) {
+      width: 100%;
+    }
+  }
+
+  &-removeTrigger {
+    flex-shrink: 0;
+    margin-left: 8px;
+    font-size: 24px;
+    color: #f00;
+  }
+}
+
 .AdminWorksList {
   display: flex;
   flex-direction: column;
