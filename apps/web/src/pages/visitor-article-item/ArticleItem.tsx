@@ -8,6 +8,7 @@ import markdownIt from 'markdown-it';
 
 import type { ArticleListItem } from '../../types';
 import { resolveRelativeTime } from '../../utils';
+import { useIdentityContext } from '../../components/identity';
 import { fetchOne, donate } from '../../services/article';
 
 import style from './style.module.scss';
@@ -15,6 +16,7 @@ import style from './style.module.scss';
 const md = markdownIt({ html: true });
 
 function ArticleItem() {
+  const identity = useIdentityContext();
   const [record, setRecord] = useState<ArticleListItem>();
   const [fetched, setFetched] = useState(false);
   const { id } = useParams();
@@ -86,16 +88,20 @@ function ArticleItem() {
           </header>
           <article className={style['ArticleItem-body']}>
             <div dangerouslySetInnerHTML={{ __html: md.render(record.content) }} />
-            <Divider />
-            <div className={style['ArticleItem-donation']}>
-              <Button
-                className={style['ArticleItem-donationTrigger']}
-                size="large"
-                shape="circle"
-                icon={<CoffeeOutlined />}
-                onClick={() => setDialogVisible(true)}
-              />
-            </div>
+            {identity.checked && identity.visitor && (
+              <>
+                <Divider />
+                <div className={style['ArticleItem-donation']}>
+                  <Button
+                    className={style['ArticleItem-donationTrigger']}
+                    size="large"
+                    shape="circle"
+                    icon={<CoffeeOutlined />}
+                    onClick={() => setDialogVisible(true)}
+                  />
+                </div>
+              </>
+            )}
           </article>
           <Modal
             title="Donate a cup of coffee"
